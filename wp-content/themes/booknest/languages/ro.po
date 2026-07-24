@@ -1,0 +1,692 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WordPress.com - Themes - Booknest\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-02-22T01:38:14+00:00\n"
+"PO-Revision-Date: 2025-02-19 21:17:02+0000\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Font size name"
+msgid "Double Extra Large"
+msgstr "Foarte mare dublu"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2X-Small"
+msgstr "Foarte, foarte mic (2X)"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "X-Small"
+msgstr "Foarte mic"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Small"
+msgstr "Mic"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Medium"
+msgstr "Mediu"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Large"
+msgstr "Mare"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "X-Large"
+msgstr "Foarte mare"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2X-Large"
+msgstr "Foarte, foarte mare (2X)"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Anton"
+msgstr "Anton"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Coconat"
+msgstr "Coconat"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Instrument Serif"
+msgstr "Instrument Serif"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Libre Franklin"
+msgstr "Libre Franklin"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Literata"
+msgstr "Literata"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Martian Mono"
+msgstr "Martian Mono"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Neutral Sans"
+msgstr "Neutral Sans"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr "Antet"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr "Metadate articol"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Comments"
+msgstr "Comentarii"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr "Subsol"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Zen Tokyo One"
+msgstr "Zen Tokyo One"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Trispace Semi"
+msgstr "Trispace Semi"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "TASA Orbiter"
+msgstr "TASA Orbiter"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "TASA Explorer"
+msgstr "TASA Explorer"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Playfair Semi"
+msgstr "Playfair Semi"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Gyrochrome"
+msgstr "Gyrochrome"
+
+#: styles/shelley.json
+msgctxt "Style variation name"
+msgid "Shelley"
+msgstr "Shelley"
+
+#: styles/saramago.json
+msgctxt "Style variation name"
+msgid "Saramago"
+msgstr "Saramago"
+
+#: styles/marquez.json
+msgctxt "Style variation name"
+msgid "Marquez"
+msgstr "Marquez"
+
+#: styles/calvino.json
+msgctxt "Style variation name"
+msgid "Calvino"
+msgstr "Calvino"
+
+#: styles/bulgakov.json
+msgctxt "Style variation name"
+msgid "Bulgakov"
+msgstr "Bulgakov"
+
+#: styles/austen.json
+msgctxt "Style variation name"
+msgid "Austen"
+msgstr "Austen"
+
+#: styles/asimov.json
+msgctxt "Style variation name"
+msgid "Asimov"
+msgstr "Asimov"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header Posts"
+msgstr "Articole în antet"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr "Foarte mare"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Mare"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Quaternary"
+msgstr "Cuaternară"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr "Mic"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Mediu"
+
+#: patterns/404.php
+msgctxt "Pattern title"
+msgid "404"
+msgstr "404"
+
+#: patterns/archive.php
+msgctxt "Pattern title"
+msgid "archive"
+msgstr "arhivă"
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "footer"
+msgstr "subsol"
+
+#: patterns/header.php
+msgctxt "Pattern title"
+msgid "header"
+msgstr "antet"
+
+#: patterns/home.php
+msgctxt "Pattern title"
+msgid "home"
+msgstr "prima pagină"
+
+#: patterns/index.php
+msgctxt "Pattern title"
+msgid "index"
+msgstr "index"
+
+#: patterns/post-meta.php
+msgctxt "Pattern title"
+msgid "post-meta"
+msgstr "metadate articol"
+
+#: patterns/search.php
+msgctxt "Pattern title"
+msgid "search"
+msgstr "caută"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Default"
+msgstr "Implicit"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Base"
+msgstr "Bază"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr "Contrast"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr "Principală"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Secondary"
+msgstr "Secundară"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Color name"
+msgid "Tertiary"
+msgstr "Terță"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Bulgakov"
+msgstr "Bulgakov"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Saramago"
+msgstr "Saramago"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Achebe"
+msgstr "Achebe"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Wool"
+msgstr "Wool"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Camus"
+msgstr "Camus"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "García Márquez"
+msgstr "García Márquez"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Kafka"
+msgstr "Kafka"
+
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+#: theme.json
+msgctxt "Duotone name"
+msgid "Calvino"
+msgstr "Calvino"
+
+#: patterns/header-posts.php
+msgctxt "Pattern title"
+msgid "header-posts"
+msgstr "articole în antet"
+
+#: patterns/home.php:212
+msgid "Upcoming Events"
+msgstr "Evenimente viitoare"
+
+#: patterns/home.php:312
+#: patterns/home.php:338
+#: patterns/home.php:364
+msgid "★★★★★"
+msgstr "★★★★★"
+
+#: patterns/home.php:419
+msgid "Frequently Asked Questions"
+msgstr "Întrebări frecvente"
+
+#: patterns/post-meta.php:11
+msgid "By"
+msgstr "De"
+
+#: patterns/home.php:392
+msgid "Latest Discussions"
+msgstr "Ultimele discuții"
+
+#: patterns/home.php:373
+msgid "This community is undoubtedly wonderful."
+msgstr "Această comunitate este fără îndoială minunată."
+
+#: patterns/home.php:369
+msgid "Emily R."
+msgstr "Emily R."
+
+#: patterns/home.php:347
+msgid "I’ve found so many gems here."
+msgstr "Am găsit atât de multe bijuterii aici."
+
+#: patterns/home.php:343
+msgid "John D."
+msgstr "John D."
+
+#: patterns/home.php:321
+msgid "BookNest is ultimately my sanctuary."
+msgstr "BookNest este în esență sanctuarul meu."
+
+#: patterns/home.php:317
+msgid "Sarah K."
+msgstr "Sarah K."
+
+#: patterns/home.php:296
+msgid "Meet Readers, Make Friends"
+msgstr "Faci cunoștință cu cititorii, îți faci prieteni"
+
+#: patterns/home.php:268
+msgid "Weekly Discussion: Chapters 11-20"
+msgstr "Discuție săptămânală: capitolele 11 - 20"
+
+#: patterns/home.php:258
+msgid "Join Live"
+msgstr "Alătură-te live"
+
+#: patterns/home.php:249
+msgid "September 25, 2024  — 6:00 PM - 7:00 PM"
+msgstr "25 septembrie 2024  - 18:00 - 19:00"
+
+#: patterns/home.php:244
+msgid "Weekly Discussion: Chapters 1-10"
+msgstr "Discuție săptămânală: capitolele 1 - 10"
+
+#: patterns/home.php:234
+#: patterns/home.php:282
+msgid "RSVP Now"
+msgstr "Confirmă acum"
+
+#: patterns/home.php:225
+#: patterns/home.php:273
+msgid "September 20, 2024 — 7:00 PM - 9:00 PM"
+msgstr "20 septembrie 2024 - 19:00 - 21:00"
+
+#: patterns/home.php:185
+msgid "Machado de Assis, 1881"
+msgstr "Machado de Assis, 1881"
+
+#: patterns/home.php:181
+msgid "Author and date"
+msgstr "Autor și dată"
+
+#: patterns/home.php:175
+msgid "March, 2025"
+msgstr "Martie 2025"
+
+#. Description of the theme
+#: style.css
+msgid "A clean, user-friendly WordPress theme designed for book clubs and readers. Easily organize events, share reviews, and build a vibrant community of literature lovers."
+msgstr "O temă WordPress curată și prietenoasă cu utilizatorii proiectată pentru cluburi de lectură și cititori. Organizezi cu ușurință evenimentele, partajezi recenziile și construiești o comunitate vie a iubitorilor de literatură."
+
+#: patterns/home.php:444
+msgid "Is there a membership fee?"
+msgstr "Există o taxă pentru membri?"
+
+#: patterns/home.php:438
+msgid "How are the books selected?"
+msgstr "Cum sunt selectate cărțile?"
+
+#: patterns/home.php:426
+msgid "How does the Booknest book club work?"
+msgstr "Cum funcționează clubul de carte Booknest?"
+
+#: patterns/home.php:432
+msgid "Do I need to be an active participant to join?"
+msgstr "Trebuie să fiu un participant activ ca să mă alătur?"
+
+#: patterns/home.php:220
+msgid "Monthly Kick-off Live Video Session"
+msgstr "Sesiuni video live lunare de lansări"
+
+#: patterns/home.php:229
+#: patterns/home.php:277
+msgid "Join us for an engaging discussion of our book of the month. Share your thoughts, listen to others’ insights, and deepen your understanding of the story."
+msgstr "Alătură-te pentru o discuție captivantă despre cartea lunii. Îți împărtășești gândurile, asculți opiniile celorlalți și aprofundezi înțelegerea cărții."
+
+#: patterns/footer-home.php:45
+msgid "About us"
+msgstr "Despre noi"
+
+#. Translators: 1. is the start of a 'a' HTML element, 2. is the end of a 'a'
+#. HTML element
+#: patterns/footer-home.php:61
+#: patterns/footer.php:42
+msgid "Designed with %1$sWordPress%2$s."
+msgstr "Proiectat cu %1$sWordPress%2$s."
+
+#: patterns/header-posts.php:22
+#: patterns/header.php:20
+msgid "."
+msgstr "."
+
+#: patterns/home.php:171
+msgid "Month"
+msgstr "Lună"
+
+#: patterns/home.php:160
+msgid "A rule-breaking masterpiece distilling the entire human comedy into brief chapters"
+msgstr "Un capodoperă care încalcă regulile, distilând întreaga comedie umană în capitole scurte"
+
+#: patterns/home.php:101
+msgid "Enroll now"
+msgstr "Înscrie-te acum"
+
+#: patterns/home.php:91
+msgid "Weekly live video with member comments."
+msgstr "Video săptămânal live cu comentariile membrilor."
+
+#: patterns/footer.php:34
+msgid "⇡"
+msgstr "⇡"
+
+#. Translators: 1. is a 'br' HTML element
+#: patterns/home.php:50
+msgid "Latest%1$sReads"
+msgstr "Ultimele%1$slecturi"
+
+#: patterns/home.php:120
+msgid "Howdy Book Lovers 👋"
+msgstr "Bună, iubitori de cărți 👋"
+
+#: patterns/home.php:78
+msgid "The Community Offers"
+msgstr "Ofertele comunității"
+
+#: patterns/home.php:16
+msgid "Discover Your Next Great Read with Booknest"
+msgstr "Descoperă următoarea lectură excelentă cu Booknest"
+
+#: patterns/home.php:124
+msgid "We believe that books have the power to transform lives."
+msgstr "Credem în puterea cărților de a transforma vieți."
+
+#: patterns/home.php:143
+msgid "Whether you prefer fiction, non-fiction, fantasy, or biographies, you’ll find your place at Booknest."
+msgstr "Indiferent dacă preferi ficțiune, nonficțiune, proză fantastică sau biografii, îți vei găsi locul la Booknest."
+
+#: patterns/home.php:156
+msgid "Now Reading"
+msgstr "Acum lecturează"
+
+#: patterns/home.php:40
+msgid "Thoughtful selections, guided discussions, and genuine engagement through our shared passion. The Booknest Reading Community is an inclusive space to embrace all kinds of readers."
+msgstr "Selecții bine gândite, discuții ghidate și implicare autentică prin pasiunea noastră comună. Comunitatea pentru literatură Booknest este un spațiu incluziv care îmbrățișează toate tipurile de cititori."
+
+#: patterns/home.php:83
+msgid "Monthly kick-off and wrap-up live video sessions."
+msgstr "Sesiuni video live lunare de lansări și concluzii."
+
+#: patterns/footer-home.php:19
+msgid "Join the club"
+msgstr "Intră în club"
+
+#: patterns/footer-home.php:41
+msgid "Sign up"
+msgstr "Înregistrare"
+
+#: patterns/footer-home.php:31
+msgid "Discover new reads and explore your favorite genres with Booknest, the perfect place to explore and share your literary journey."
+msgstr "Descoperă lecturi noi și explorează genurile tale preferate cu Booknest, locul perfect pentru a explora și partaja călătoria ta literară."
+
+#: patterns/footer-home.php:27
+msgid "Become a part of Booknest and connect with folks who share your passion for reading. As a member, you’ll have exclusive access to curated book lists, engaging discussions, and special events tailored to your interests."
+msgstr "Fă parte din Booknest și intră în contact cu oameni care îți împărtășesc pasiunea pentru lectură. În calitate de membru, vei avea acces exclusiv la liste cu cărți bine organizate, discuții captivante și evenimente speciale adaptate intereselor tale."
+
+#: patterns/404.php:17
+msgid "Oops..."
+msgstr "Hopa..."
+
+#: patterns/404.php:33
+msgid "This page was not found."
+msgstr "Această pagină nu a fost găsită."
+
+#. Translators: 1. is a 'br' HTML element
+#: patterns/404.php:53
+msgid "It looks like nothing was found at this location.%1$sMaybe try a search?"
+msgstr "Se pare că nu am găsit nimic la această locație.%1$sÎncerci o nouă căutare?"
+
+#: patterns/archive.php:46
+#: patterns/index.php:40
+#: patterns/search.php:58
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Regret, dar nu s-a potrivit nimic cu termenii tăi de căutare. Te rog încearcă din nou cu alte cuvinte cheie."
+
+#: patterns/archive.php:23
+#: patterns/home.php:405
+#: patterns/index.php:21
+#: patterns/search.php:35
+msgid "↳"
+msgstr "↳"

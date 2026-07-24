@@ -1,0 +1,12 @@
+# post type description
+curl -s "http://localhost:8080/wp-json/wp/v2/types/event" | jq . > ~/oswp/qa/schema-event-type.json 
+
+# all taxonomies, described
+curl -s "http://localhost:8080/wp-json/wp/v2/taxonomies" | jq . > ~/oswp/qa/schema-taxonomies.json
+
+# ACF's own field definitions — already have this one, just a friendlier copy name
+cp ~/oswp/wp-content/themes/twentytwentyfive/acf-json/group_6a606d82f3bb0.json ~/oswp/qa/schema-event-fields.json
+
+# a real live record, for comparison against the above
+curl -s "http://localhost:8080/wp-json/wp/v2/event/40" | jq . > ~/oswp/qa/schema-sample-record.json
+

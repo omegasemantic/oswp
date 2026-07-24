@@ -1,0 +1,25 @@
+Yes — and that's actually the correct implication of "one dataset, one source of truth."
+
+On the information view (What's On, full calendar), yoga and the international act get identical structural billing — same template, same fields, same visual weight. That's not a bug, it's the point: the calendar's job is completeness and reliability, not editorial judgement. Someone checking Tuesday's schedule needs yoga listed with the same clarity as anything else that's on.
+
+The differentiation happens only on the promotion view — the featured flag is what gives the international act homepage-tile prominence that yoga (rightly) doesn't get. Same row in the database, same template rendering it on the calendar page, but only one of them gets pulled into the curated set.
+
+So the assumption holds, and it's worth stating it that plainly to stakeholders: equal billing on the calendar, unequal billing on the homepage — and that distinction is what the featured flag exists to manage.
+
+
+Locking in the brief: mobile-first, portfolio-vibe (not catalogue) homepage, one Event CPT as single source of truth (equal billing on calendar, featured flag drives promotion), thin static About-Us pages, office-manager-friendly form, REST API for dev/proof, Query Loop for eventual display, designer inherits a proven dataset.
+
+Roadmap to handover point:
+
+Schema design — finalise the field list on paper first: date/time, recurring (bool + frequency + end date), venue (taxonomy), category (taxonomy), featured (bool or priority int), ticket link, image, description. Lock this before touching WordPress — changing fields later means re-entering data.
+Install CPT UI + ACF — register the event post type, build the ACF field group matching the schema. Tick "Show in REST" on every field.
+Seed test data — enter maybe 15–20 realistic records by hand (mix of recurring/one-off, featured/not, different venues and categories) — enough variety to stress-test filtering, not the whole real calendar yet.
+Prove retrieval via REST — hit /wp-json/wp/v2/event, confirm all fields return correctly. Test the filters you'll actually need: upcoming-only, featured-only, by category, by venue. Where native REST can't filter on meta (featured/recurring), decide now whether that's a small custom endpoint tweak or client-side filtering — resolve this before handover, not after.
+Resolve recurrence logic — decide and test how a recurring record becomes multiple calendar instances (generate-on-save vs. compute-on-query). This is the one piece likely to need either a plugin or a bit of custom logic; get it working and provable via the API before moving on.
+Validate the office-manager form — go through ACF's front-end form settings (or just the standard admin edit screen) as if you were the office manager. Confirm it's genuinely a half-dozen fields, no stray complexity, immediate save-and-visible-in-API result.
+Document the schema — a short reference (field names, types, taxonomy terms, what "featured" means, how recurrence works) for whoever designs templates next. This is the actual handover artifact.
+Handover point — designer receives: working CPT, populated test data, documented schema, proven filters. Their job starts at Query Loop templates, not data modelling.
+
+Steps 1–5 are the technical proving ground; 6–8 are what makes the handover clean.
+###
+The genuine payoff of thinking about it this way: e-commerce is one of WordPress's most mature, most-solved problem domains — the plugin ecosystem, the Query Loop patterns, the taxonomy/filtering conventions are all extremely well worn territory, more so than "events" as a category. If at any point a tool built for "shop" thinking (filterable archive pages, "sold out"/"past" states, category/tag filtering UI) fits better than an events-specific plugin, it's worth borrowing that pattern rather than reinventing it — you're not doing anything conceptually novel, you're building a catalogue where the product happens to be "an experience on a date" rather than "a physical object."

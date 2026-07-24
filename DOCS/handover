@@ -1,0 +1,83 @@
+# Sitrep / Handover — Raglan Arts Centre Rebuild — 23 July 2026 (Session 2)
+
+This document is written to be handed to a new chat thread cold. It supersedes/extends the earlier `sitrep-2026-07-23.md` (schema-build session) — read that first for full schema field definitions and taxonomy structure, which are unchanged. This document covers the display/theme-building session that followed.
+
+## Project one-line summary
+Rebuilding raglanartscentre.co.nz on WordPress, replacing the current My Calendar-plugin-as-architecture setup with a clean custom post type (`event`) as the single source of truth, feeding multiple filtered display views (homepage tiles, recurring-classes grid, calendar list, category/venue archives). Not building a checkout — all ticketing/booking stays external via a link field. Full design rationale and decision history lives in the earlier sitrep and this project's chat history if needed.
+
+## Environment (unchanged from session 1)
+- Local WordPress via Docker Compose, dir `~/oswp` (Crostini/ChromeOS Linux container).
+- Containers: `oswp-wordpress-1`, `oswp-db-1`. Site: `http://localhost:8080`.
+- **WP-CLI now installed** inside the WordPress container (added this session, since REST API requires auth for some endpoints like `/wp/v2/templates`):
+  ```bash
+  docker exec -it oswp-wordpress-1 wp <command> --allow-root
+  ```
+- WordPress core version: **7.0.2**
+- Active plugins: Advanced Custom Fields (free), Custom Post Type UI, **Code Snippets (added this session)**.
+
+## Schema status
+Unchanged from session 1 sitrep — fully built, proven via REST queries against real Raglan event data. No new fields added this session. Known TODOs from session 1 (recurrence_day REST bug, featured+date combo, frequency label cosmetic) still open, not touched this session.
+
+## This session's focus: theme selection and first real display template
+
+### Theme decision
+- Ruled out: page-builder-dependent themes, plugin-locked event themes (e.g. anything requiring "The Events Calendar" as the actual data source — conflicts with the "calendar is display-only, schema is source of truth" rule).
+- **Chosen direction**: Twenty Twenty-Five (WordPress default theme) as a deliberately minimal "skeleton," to be restyled via `theme.json` using colour/typography/spacing values ported from **Massively by HTML5 UP** — the open-source template that the user's Jekyll reference site (Karamu, at `omegasemantic.github.io/karamu`) is itself built from. Rationale: avoids adopting anyone else's opinionated theme/pattern library ("throw away other people's solutions"); Massively's actual CSS values haven't been extracted yet — next step if continuing theme work.
+- **Landing page approach confirmed**: WordPress Pages/Front Page templates are freeform block-editor canvases, independent of other templates — confirmed this supports "hand-build the tile-grid landing page, then retreat into standard templates for everything else."
+- **Workflow preference established**: user works in terminal/vim, not GUI. Established that `theme.json`, template files (`templates/*.html`), and pattern files (`patterns/*.php`) are plain text, directly editable, git-trackable — BUT only if the Site Editor's GUI (specifically Appearance → Editor → **Styles** panel, and editing templates via the GUI editor) is avoided, since GUI edits save as **database overrides** that silently take precedence over the file on disk. Rule going forward: **edit theme.json and template files directly in vim; never open the Styles panel; be aware that editing a template via the Site Editor GUI creates a database-stored "customized" copy that shadows the file.**
+
+### First real template — Single Event
+- Created via Site Editor → Add New Template → "Single item: Event" → **this saved as a database-only `wp_template` post (ID 60, slug `single-event`), NOT as a file on disk** — `find` confirmed no matching file exists in the theme's `templates/` folder. This is a known WordPress behaviour (Site Editor-created templates stay in DB unless explicitly exported/synced to theme files) — worth deciding later whether to export this to a real file for git-tracking, or accept DB-stored templates for now.
+- Template currently contains: Post Title block, Post Featured Image block, one Shortcode block (was being used to test ACF field display).
+- Confirmed native linking mechanism: Query Loop's Post Title/Featured Image blocks have a "link to post" option; clicking through uses WordPress's standard template hierarchy to automatically resolve to `single-event` for any `event` post — no manual work needed once the template exists.
+
+### Major debugging chase this session — ACF field display, resolved
+**Symptom**: `[acf field="attendance_note"]` shortcode displayed "[The ACF shortcode is disabled on this site]", then after partial fixes, silently returned empty with no error.
+
+**Root causes found (three separate, stacked issues)**:
+1. ACF's shortcode is **disabled by default** for any install first activated at ACF version ≥6.3 (security hardening). Fixed via a Code Snippets entry:
+   ```php
+   add_action('init', function() {
+       acf_update_setting('enable_shortcode', true);
+   });
+   add_filter('acf/shortcode/allow_in_block_themes_outside_content', '__return_true');
+   ```
+   (Note: the earlier-guessed filter name `acf/settings/shortcode` does NOT exist in this ACF version — that was a wrong lead, don't reuse it.)
+2. ACF additionally blocks its shortcode by default **inside block-theme templates** specifically (separate from #1) — the second line above (`allow_in_block_themes_outside_content` filter) addresses this.
+3. **The actual final blocker**: each ACF field has its own **"Allow Access in Editor UI"** setting (internally `allow_in_bindings`), **off by default per field**, gating both the shortcode AND the native block-binding UI. This had to be manually enabled on `attendance_note` specifically (ACF → Field Groups → Event Details → open field → enable the toggle) before the shortcode worked. **This is per-field — needs to be repeated for every field you want to display** (event_date, venue info, attendance_link, etc. — not yet done for any field except `attendance_note`).
+
+**Diagnostic method that worked**: WP-CLI's `wp eval` to call PHP directly inside the container, bypassing REST auth issues and shell-quoting ambiguity — specifically calling `acf_shortcode()` with a real PHP array argument (not a shortcode string) was what finally isolated the true cause, after `do_shortcode()` string-based tests gave inconclusive/misleading results.
+
+**Decision going forward**: native **block bindings** (the modern Gutenberg mechanism — select a block, connect it directly to a custom field, no shortcode text) is ACF's actual current-intended approach and was being explored as the preferred long-term method, but the exact UI location for it wasn't found in WP 7.0.2 during this session (tried Paragraph block's toolbar link icon — that's the ordinary hyperlink tool, not it; tried the three-dot menu — only formatting options appeared). **Shortcode approach was used instead as the pragmatic fallback since the underlying field-permission fix (#3 above) unblocks both mechanisms anyway.**
+
+## Immediate next steps (in order)
+1. **Enable "Allow Access in Editor UI" on remaining fields** you want to display on the Single Event template: `event_date`, `venue` (taxonomy, may work differently), `attendance_type`, `attendance_link`, `booking_required`, `event_end`. Currently only `attendance_note` has this enabled.
+2. **Rebuild the Single Event template properly** with shortcode blocks (or working block-bindings, if the UI location gets found) for each of the above fields, labelled clearly (e.g. "Date: [acf field=event_date]").
+3. **Verify on front end**: `http://localhost:8080/event/yoga-flow/` should show title, image (if set), date, and attendance note once fields are enabled.
+4. **Resume the theme-building plan**: extract real Massively CSS values (colours, fonts, spacing) — not yet done, was about to happen before this session pivoted into the ACF debugging chase. Port into `theme.json` directly via vim.
+5. **Build the archive/category templates** (Film archive, Venue archive) — simpler than Single Event, mostly just a styled Query Loop, no ACF field-permission issues expected since taxonomy-based Query Loop filtering doesn't hit the bindings gate (that's specific to displaying custom field *values*, not filtering by taxonomy).
+6. **Build the Front Page** (tile grid, Karamu/Massively-styled) — last, since it depends on the Single Event template existing to link to.
+7. Consider exporting the database-stored `single-event` template to an actual theme file for git-tracking, given the user's stated preference for file-based, version-controllable work.
+
+## Carried-forward TODOs from session 1 (still open, untouched this session)
+1. `recurrence_day` returns wrong/stale value via REST despite correct GUI entry — needs investigation.
+2. Featured-tile queries must combine `is_featured == true AND event_date >= today` at build time (not a bug, a design reminder).
+3. `recurrence_frequency` Select field Return Format shows duplicated "weekly: Weekly" text — cosmetic, change Return Format to "Label."
+4. Raglan Creative Market's venue should be "St John's Hall Grounds," not generic "Off-Site" — fix before this is ever real data.
+5. Ragtimers' event_date entered as a past date — correct if continuing to use as demo data.
+6. Delete/retire the unused `ticket_link` field once confident nothing depends on it.
+7. Five original dummy event records (Pottery, Yoga, Book Club, Market, Concert) still in the dataset — remove before showing to non-technical stakeholders.
+8. Homepage currently shows WordPress's default "latest posts" blog view (Settings → Reading not yet configured to use a static front page) — cosmetic/expected at this stage, fix when building the real Front Page.
+
+## Not yet started
+- Venue-level ACF field group (directions/location notes) — flagged as future work, not built.
+- Ticketing consolidation conversation with client (Eventfinda / Humanitix / in-house reserve / Creative Raglan).
+- Real hosting + domain — entirely local still.
+- Any actual page design/styling beyond the single unstyled test Query Loop page ("grid") and the barely-started Single Event template.
+
+## Working conventions established (apply to all future sessions)
+- Direct file/vim editing preferred over GUI wherever a file genuinely exists and no database-override risk applies.
+- Never open Appearance → Editor → Styles panel (creates database override of theme.json).
+- Be aware: editing any template via the Site Editor GUI risks creating a database "customized" copy that shadows the theme file of the same name — check with WP-CLI (`wp post list --post_type=wp_template`) if in doubt about which is authoritative.
+- WP-CLI (`docker exec -it oswp-wordpress-1 wp ... --allow-root`) is the reliable tool for inspecting real state when the GUI or REST API is ambiguous or auth-restricted.
+- User prefers being walked through GUI steps explicitly when GUI use is unavoidable (Site Editor navigation is not yet familiar territory).

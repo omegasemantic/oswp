@@ -1,0 +1,36 @@
+{
+  "description": "",
+  "hierarchical": false,
+  "has_archive": true,
+  "name": "events",
+  "slug": "event",
+  "icon": null,
+  "taxonomies": [
+    "venue",
+    "event_category",
+    "staff"
+  ],
+  "rest_base": "event",
+  "rest_namespace": "wp/v2",
+  "template": [],
+  "template_lock": false,
+  "_links": {
+    "collection": [
+      {
+        "href": "http://localhost:8080/wp-json/wp/v2/types"
+      }
+    ],
+    "wp:items": [
+      {
+        "href": "http://localhost:8080/wp-json/wp/v2/event"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
+}

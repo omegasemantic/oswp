@@ -1,0 +1,23 @@
+
+body {
+    font-family: serif;
+    line-height: 1.2;
+    font-size: 1.2rem;
+    background: #ffc40c;
+}
+
+h1 { 
+    color: blue; 
+}
+
+.wp-block-post-title {
+
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: ; 
+}
+
+.wp-block-post-excerpt__excerpt {
+    font-size: 1.2rem;
+    }
+

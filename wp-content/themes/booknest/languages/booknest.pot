@@ -1,0 +1,760 @@
+# Copyright (C) 2026 Automattic
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Booknest 1.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/booknest\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-05-28T00:55:50+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Booknest"
+msgstr ""
+
+#. Theme URI of the theme
+#: style.css
+msgid "https://themeshaper.com/booknest"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "A clean, user-friendly WordPress theme designed for book clubs and readers. Easily organize events, share reviews, and build a vibrant community of literature lovers."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Automattic"
+msgstr ""
+
+#. Author URI of the theme
+#: style.css
+msgid "https://automattic.com"
+msgstr ""
+
+#: patterns/404.php
+msgctxt "Pattern title"
+msgid "404"
+msgstr ""
+
+#: patterns/404.php:17
+msgid "Oops..."
+msgstr ""
+
+#: patterns/404.php:33
+msgid "This page was not found."
+msgstr ""
+
+#. Translators: 1. is a 'br' HTML element
+#: patterns/404.php:53
+#, php-format
+msgid "It looks like nothing was found at this location.%1$sMaybe try a search?"
+msgstr ""
+
+#: patterns/archive.php
+msgctxt "Pattern title"
+msgid "archive"
+msgstr ""
+
+#: patterns/archive.php:23
+#: patterns/home.php:405
+#: patterns/index.php:21
+#: patterns/search.php:35
+msgid "↳"
+msgstr ""
+
+#: patterns/archive.php:46
+#: patterns/index.php:40
+#: patterns/search.php:58
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr ""
+
+#: patterns/footer-home.php
+msgctxt "Pattern title"
+msgid "footer-home"
+msgstr ""
+
+#: patterns/footer-home.php:19
+msgid "Join the club"
+msgstr ""
+
+#: patterns/footer-home.php:27
+msgid "Become a part of Booknest and connect with folks who share your passion for reading. As a member, you’ll have exclusive access to curated book lists, engaging discussions, and special events tailored to your interests."
+msgstr ""
+
+#: patterns/footer-home.php:31
+msgid "Discover new reads and explore your favorite genres with Booknest, the perfect place to explore and share your literary journey."
+msgstr ""
+
+#: patterns/footer-home.php:41
+msgid "Sign up"
+msgstr ""
+
+#: patterns/footer-home.php:45
+msgid "About us"
+msgstr ""
+
+#. Translators: 1. is the start of a 'a' HTML element, 2. is the end of a 'a' HTML element
+#: patterns/footer-home.php:61
+#: patterns/footer.php:42
+#, php-format
+msgid "Designed with %1$sWordPress%2$s."
+msgstr ""
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "footer"
+msgstr ""
+
+#: patterns/footer.php:34
+msgid "⇡"
+msgstr ""
+
+#: patterns/header-posts.php
+msgctxt "Pattern title"
+msgid "header-posts"
+msgstr ""
+
+#: patterns/header-posts.php:22
+#: patterns/header.php:20
+msgid "."
+msgstr ""
+
+#: patterns/header.php
+msgctxt "Pattern title"
+msgid "header"
+msgstr ""
+
+#: patterns/home.php
+msgctxt "Pattern title"
+msgid "home"
+msgstr ""
+
+#: patterns/home.php:16
+msgid "Discover Your Next Great Read with Booknest"
+msgstr ""
+
+#: patterns/home.php:40
+msgid "Thoughtful selections, guided discussions, and genuine engagement through our shared passion. The Booknest Reading Community is an inclusive space to embrace all kinds of readers."
+msgstr ""
+
+#. Translators: 1. is a 'br' HTML element
+#: patterns/home.php:50
+#, php-format
+msgid "Latest%1$sReads"
+msgstr ""
+
+#: patterns/home.php:78
+msgid "The Community Offers"
+msgstr ""
+
+#: patterns/home.php:83
+msgid "Monthly kick-off and wrap-up live video sessions."
+msgstr ""
+
+#: patterns/home.php:87
+msgid "Weekly open discussions divided by chapters, with no spoilers."
+msgstr ""
+
+#: patterns/home.php:91
+msgid "Weekly live video with member comments."
+msgstr ""
+
+#: patterns/home.php:101
+msgid "Enroll now"
+msgstr ""
+
+#: patterns/home.php:120
+msgid "Howdy Book Lovers 👋"
+msgstr ""
+
+#: patterns/home.php:124
+msgid "We believe that books have the power to transform lives."
+msgstr ""
+
+#: patterns/home.php:139
+msgid "Through our club, we strive to foster a love for reading, promote lifelong learning, and build connections among members."
+msgstr ""
+
+#: patterns/home.php:143
+msgid "Whether you prefer fiction, non-fiction, fantasy, or biographies, you’ll find your place at Booknest."
+msgstr ""
+
+#: patterns/home.php:156
+msgid "Now Reading"
+msgstr ""
+
+#: patterns/home.php:160
+msgid "A rule-breaking masterpiece distilling the entire human comedy into brief chapters"
+msgstr ""
+
+#: patterns/home.php:171
+msgid "Month"
+msgstr ""
+
+#: patterns/home.php:175
+msgid "March, 2025"
+msgstr ""
+
+#: patterns/home.php:181
+msgid "Author and date"
+msgstr ""
+
+#: patterns/home.php:185
+msgid "Machado de Assis, 1881"
+msgstr ""
+
+#: patterns/home.php:192
+msgid "The Posthumous Memoirs of Brás Cubas, also translated as Epitaph of a Small Winner, is a novel by Brazilian writer Joaquim Maria Machado de Assis. The book presents the memoir of its protagonist, Brás Cubas, as told from beyond the grave."
+msgstr ""
+
+#: patterns/home.php:196
+msgid "The novel has a unique style of short, erratic chapters that shift in tone and style. Instead of the clear and logical construction of a typical nineteenth-century realist novel, it uses surreal devices of metaphor and playful narrative construction."
+msgstr ""
+
+#: patterns/home.php:212
+msgid "Upcoming Events"
+msgstr ""
+
+#: patterns/home.php:220
+msgid "Monthly Kick-off Live Video Session"
+msgstr ""
+
+#: patterns/home.php:225
+#: patterns/home.php:273
+msgid "September 20, 2024 — 7:00 PM - 9:00 PM"
+msgstr ""
+
+#: patterns/home.php:229
+#: patterns/home.php:277
+msgid "Join us for an engaging discussion of our book of the month. Share your thoughts, listen to others’ insights, and deepen your understanding of the story."
+msgstr ""
+
+#: patterns/home.php:234
+#: patterns/home.php:282
+msgid "RSVP Now"
+msgstr ""
+
+#: patterns/home.php:244
+msgid "Weekly Discussion: Chapters 1-10"
+msgstr ""
+
+#: patterns/home.php:249
+msgid "September 25, 2024  — 6:00 PM - 7:00 PM"
+msgstr ""
+
+#: patterns/home.php:253
+msgid "Understand the author of The Tempest in this exclusive Q&amp;A session. Ask your burning questions and learn about the inspiration behind the book."
+msgstr ""
+
+#: patterns/home.php:258
+msgid "Join Live"
+msgstr ""
+
+#: patterns/home.php:268
+msgid "Weekly Discussion: Chapters 11-20"
+msgstr ""
+
+#: patterns/home.php:296
+msgid "Meet Readers, Make Friends"
+msgstr ""
+
+#: patterns/home.php:312
+#: patterns/home.php:338
+#: patterns/home.php:364
+msgid "★★★★★"
+msgstr ""
+
+#: patterns/home.php:317
+msgid "Sarah K."
+msgstr ""
+
+#: patterns/home.php:321
+msgid "BookNest is ultimately my sanctuary."
+msgstr ""
+
+#: patterns/home.php:343
+msgid "John D."
+msgstr ""
+
+#: patterns/home.php:347
+msgid "I’ve found so many gems here."
+msgstr ""
+
+#: patterns/home.php:369
+msgid "Emily R."
+msgstr ""
+
+#: patterns/home.php:373
+msgid "This community is undoubtedly wonderful."
+msgstr ""
+
+#: patterns/home.php:392
+msgid "Latest Discussions"
+msgstr ""
+
+#: patterns/home.php:419
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: patterns/home.php:426
+msgid "How does the Booknest book club work?"
+msgstr ""
+
+#: patterns/home.php:427
+msgid "Each month, we select a new book for our members to read. We start with a live discussion, share weekly posts for open conversations, and host interactive live sessions to explore comments. At the end of the month, we wrap up with a special live session to reflect on the book before moving on to the next one."
+msgstr ""
+
+#: patterns/home.php:432
+msgid "Do I need to be an active participant to join?"
+msgstr ""
+
+#: patterns/home.php:433
+msgid "Not at all! You can engage as much or as little as you like. Whether you prefer reading along quietly, sharing your thoughts in the comments, or joining our live discussions, Booknest welcomes all kinds of readers."
+msgstr ""
+
+#: patterns/home.php:438
+msgid "How are the books selected?"
+msgstr ""
+
+#: patterns/home.php:439
+msgid "Our selections balance literary classics, modern gems, and diverse genres to keep things fresh and engaging. Members can also suggest books, and we occasionally hold polls to let the community decide upcoming reads."
+msgstr ""
+
+#: patterns/home.php:444
+msgid "Is there a membership fee?"
+msgstr ""
+
+#: patterns/home.php:445
+msgid "Booknest offers free and premium membership tiers. While free members can access book selections and discussions, premium members enjoy exclusive perks like extra content, private Q&amp;A sessions, and early event access."
+msgstr ""
+
+#: patterns/index.php
+msgctxt "Pattern title"
+msgid "index"
+msgstr ""
+
+#: patterns/post-meta.php
+msgctxt "Pattern title"
+msgid "post-meta"
+msgstr ""
+
+#: patterns/post-meta.php:11
+msgid "By"
+msgstr ""
+
+#: patterns/search.php
+msgctxt "Pattern title"
+msgid "search"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Default"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Calvino"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Kafka"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "García Márquez"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Camus"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Wool"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Achebe"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Saramago"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Duotone name"
+msgid "Bulgakov"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Base"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Secondary"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Tertiary"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Color name"
+msgid "Quaternary"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2X-Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "X-Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "X-Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2X-Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Anton"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Coconat"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Gyrochrome"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Instrument Serif"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Libre Franklin"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Literata"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Martian Mono"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Neutral Sans"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Playfair Semi"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "TASA Explorer"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "TASA Orbiter"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Trispace Semi"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Zen Tokyo One"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr ""
+
+#: theme.json
+#: styles/asimov.json
+#: styles/austen.json
+#: styles/bulgakov.json
+#: styles/calvino.json
+#: styles/marquez.json
+#: styles/saramago.json
+#: styles/shelley.json
+msgctxt "Font size name"
+msgid "Double Extra Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header Posts"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Comments"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer Home"
+msgstr ""
+
+#: styles/asimov.json
+msgctxt "Style variation name"
+msgid "Asimov"
+msgstr ""
+
+#: styles/austen.json
+msgctxt "Style variation name"
+msgid "Austen"
+msgstr ""
+
+#: styles/bulgakov.json
+msgctxt "Style variation name"
+msgid "Bulgakov"
+msgstr ""
+
+#: styles/calvino.json
+msgctxt "Style variation name"
+msgid "Calvino"
+msgstr ""
+
+#: styles/marquez.json
+msgctxt "Style variation name"
+msgid "Marquez"
+msgstr ""
+
+#: styles/saramago.json
+msgctxt "Style variation name"
+msgid "Saramago"
+msgstr ""
+
+#: styles/shelley.json
+msgctxt "Style variation name"
+msgid "Shelley"
+msgstr ""

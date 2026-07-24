@@ -1,0 +1,85 @@
+# Sitrep — Raglan Arts Centre Rebuild — 23 July 2026
+
+## Environment
+- Local WordPress via Docker Compose, dir `~/oswp`, containers `oswp-wordpress-1` / `oswp-db-1`.
+- Site: `http://localhost:8080`. Permalinks set to "Post name" (required for REST to work).
+- Plugins: Custom Post Type UI, Advanced Custom Fields (free).
+
+## Schema — `event` post type
+
+### ACF Field Group: "Event Details"
+| Field Name | Type | Notes |
+|---|---|---|
+| `event_date` | Date Time Picker | |
+| `event_end` | Date Time Picker | optional |
+| `is_recurring` | True/False | |
+| `recurrence_frequency` | Select (weekly/fortnightly/monthly) | conditional on is_recurring; **TODO: Return Format set to Value+Label, shows "weekly: Weekly" — set to Label only** |
+| `recurrence_day` | Select (Mon–Sun) | conditional on is_recurring; **TODO: REST returns "monday" for all records regardless of GUI value — investigate raw postmeta / duplicate field defs / caching** |
+| `recurrence_end` | Date Picker | fixed typo from `recuurence_end` |
+| `is_featured` | True/False | |
+| `feature_priority` | Number | lower = higher priority |
+| `attendance_type` | Select: `interested`, `going` | simplified from earlier 4-option (buy/free/koha/interested) design |
+| `booking_required` | True/False | conditional on attendance_type = going; captures "free but must book" case |
+| `attendance_note` | Text | free-text price/condition nuance, e.g. "Free for gym members, $25 non-members" |
+| `attendance_link` | URL | supersedes retired `ticket_link` |
+| `group_enquiry_link` | URL | optional, independent of attendance_type |
+| `ticket_link` | URL | **retired, unused — delete once confident nothing references it** |
+
+All fields have "Show in REST API" enabled.
+
+### Taxonomies
+- `event_category` (hierarchical): Exhibition, Film, Music, Workshop, Class, Market, Community Group, Fundraiser, Pottery (parent) → Pottery Beginners, Pottery Advanced (children).
+- `venue` (hierarchical): Gallery, Clay Shed, Theatre Workshop, Eva's Room, Off-Site, Whare Tapere.
+  - **Known data-accuracy gap**: St John's Hall Grounds is currently filed under generic "Off-Site" — should be its own venue term. Left as-is intentionally for testing; fix before real data entry.
+
+## Key design decisions this session
+1. **Calendar is display-only, never a data source.** Hard rule — no calendar plugin will ever own event data; any calendar view must query the same `event` CPT as everything else. Rationale: this is exactly the architecture flaw being replaced (My Calendar currently *is* the site's data layer, not a view on it).
+2. **Recurring events are one record per series, not one record per occurrence.** Confirmed via the "shopping category" analogy (Menswear/Shoes tiles, not per-SKU tiles) — a recurring tile links to one event detail page, which computes "next occurrence" live. No instance-generation needed.
+3. **Attendance model simplified from 4 types to 2 + 2 flags**, based on real data (Yoga Flow's member/non-member pricing, "free but must book" cases):
+   - `attendance_type`: interested / going (borrowed from social-media commitment framing)
+   - `booking_required`: independent flag — a "going" event may or may not require booking regardless of price
+   - `attendance_note`: free text absorbs pricing nuance that doesn't fit a rigid dropdown
+4. **Ticketing scope boundary**: not building a checkout. `attendance_link` points externally (Eventfinda, Humanitix, in-house reserve system, Creative Raglan, etc.) — schema is agnostic to which provider. Client has an existing Stripe account (likely underlying Humanitix, not directly integrated) — WooCommerce+Stripe remains an open, deliberately parked option, not required by current schema.
+5. **Sub-categories for split offerings** (e.g. Pottery Beginners/Advanced) via taxonomy parent/child terms, not new fields — reused existing hierarchical taxonomy mechanism.
+6. **Venue-level reusable info (directions, "2nd floor Building A") belongs on the venue taxonomy term, not the event** — flagged as a future ACF-on-taxonomy addition, not built yet. Event-specific ad hoc notes stay in the event's own description field.
+
+## REST API limitations confirmed (not bugs, known WP behaviour)
+- Native `meta_key`/`meta_value` REST query params are silently ignored — no server-side filtering on ACF fields via URL. Taxonomy filtering (`?event_category=ID`, `?venue=ID`) works natively and correctly.
+- This only affects **dev-time curl convenience** — the eventual Query Loop block in the Site Editor uses `WP_Query` directly, which natively supports `meta_query` and `orderby=meta_value` (featured/priority sorting, etc. will work correctly in the real templates without any workaround).
+- Decision: don't build a workaround now. Client-side (`jq`) filtering is sufficient for the current proving phase.
+
+## Test dataset (real events, pulled from live raglanartscentre.co.nz)
+1. Raranga Exhibition — past event (17–29 June), Gallery, Exhibition — deliberately kept as a "past event" test case.
+2. Yoga Flow — recurring weekly (Thu), Whare Tapere, Class — free for members/$25 non-members, booking required. Key test case for the "free but must book" rule.
+3. Ragtimers Ukulele Group — recurring weekly (Tue, entered as Mon due to bug), Eva's Room, Community Group, attendance_type = interested.
+4. Movie: Fackham Hall — one-off, Theatre Workshop, Film, booking required, attendance_note carries the reserve-cutoff detail.
+5. Raglan Creative Market — one-off, Off-Site (should be St John's Hall Grounds), Market, free, no booking required.
+
+Plus five earlier dummy records (Pottery, Yoga, Book Club, Market, Concert) still in the dataset — harmless noise, no taxonomy terms assigned, naturally excluded from filtered queries.
+
+## Queries proven working (curl | jq against REST)
+- Full dump / compact view.
+- Date-range filtering ("upcoming only") — correctly excludes past events.
+- Recurring-only filter with day/frequency display.
+- Featured + priority sort.
+- Attendance-type filter (interested vs going).
+- Booking-required filter — correctly surfaces both paid and free-but-booked events together.
+- Taxonomy filter by category ID.
+- Taxonomy filter by venue ID.
+- Combined filter (upcoming AND going) — the realistic "what can I actually attend soon" query.
+
+## Open TODOs (carried forward)
+1. **Bug**: `recurrence_day` returns "monday" via REST for all recurring records regardless of GUI-selected value (confirmed correct in GUI for Yoga Flow=Thursday, Ragtimers=Tuesday). Needs: check raw postmeta via Custom Fields panel, check for duplicate field definitions, retest after explicit re-save.
+2. **Design note, not a bug**: featured-tile queries must combine `is_featured == true AND event_date >= today` — tested example (Raranga) shows a past event can still appear "featured" if the AND condition isn't applied. Remember at Query Loop build time.
+3. **Cosmetic**: `recurrence_frequency` Select field Return Format should be changed to "Label" only, to stop REST/display showing "weekly: Weekly".
+4. Fix Raglan Creative Market's venue to "St John's Hall Grounds" once that term is added (currently filed under generic Off-Site).
+5. Ragtimers' event_date is in the past (7/21) — was meant to be an upcoming Tuesday; harmless as a second past-event test case but worth correcting if continuing to use this as demo data.
+6. Delete or repurpose the retired `ticket_link` field once confident nothing depends on it.
+7. Five original dummy records still in the dataset — fine to leave for now, delete before this ever becomes a real demo to show non-technical stakeholders.
+
+## Not yet started (next phases)
+- Site Editor / Query Loop template design (homepage tiles, event detail page, recurring "shopping category" grid, calendar list view).
+- Venue-level ACF field group (directions/location notes).
+- Ticketing consolidation conversation with client (Eventfinda / Humanitix / in-house / Creative Raglan situation).
+- Real hosting + domain (currently entirely local).
+- Designer handover documentation (this sitrep plus the schema table above is the seed of that).

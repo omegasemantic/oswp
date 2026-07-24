@@ -1,0 +1,23 @@
+┌─────────────────────┐       ┌──────────────────┐
+│ EVENT                │       │ VENUE             │
+├─────────────────────┤       ├──────────────────┤
+│ id (PK)              │──┐    │ id (PK)           │
+│ title                │  │    │ name              │
+│ slug                 │  ├───→│ slug              │
+│ status                │  │    └──────────────────┘
+│ event_date            │  │
+│ event_end             │  │    ┌──────────────────┐
+│ is_recurring          │  │    │ STAFF             │
+│ recurrence_frequency  │  │    ├──────────────────┤
+│ recurrence_day        │  │    │ id (PK)           │
+│ is_featured           │  ├───→│ name              │
+│ attendance_type       │  │    │ slug              │
+│ attendance_note       │  │    └──────────────────┘
+│ attendance_link       │  │
+│ booking_required      │  │    ┌──────────────────┐
+│ venue_id (FK)         │──┘    │ EVENT_CATEGORY    │
+│ staff_id (FK)         │──┐    ├──────────────────┤
+│ category_id (FK)      │──┼───→│ id (PK)           │
+└─────────────────────┘  │    │ name              │
+                            └───→│ slug              │
+                                 └──────────────────┘

@@ -1,0 +1,70 @@
+{
+	"settings": {
+		"typography": {
+			"fontSizes": [
+				{
+					"fluid": false,
+					"name": "X-Small",
+					"size": "0.75rem",
+					"slug": "x-small"
+				},
+				{
+					"fluid": false,
+					"name": "Small",
+					"size": "1rem",
+					"slug": "small"
+				},
+				{
+					"fluid": {
+						"max": "1.125rem",
+						"min": "1rem"
+					},
+					"name": "Medium",
+					"size": "1.125rem",
+					"slug": "medium"
+				},
+				{
+					"fluid": {
+						"max": "1.625rem",
+						"min": "1.4375rem"
+					},
+					"name": "Large",
+					"size": "1.625rem",
+					"slug": "large"
+				},
+				{
+					"fluid": {
+						"max": "3rem",
+						"min": "1.825rem"
+					},
+					"name": "X-Large",
+					"size": "3rem",
+					"slug": "x-large"
+				},
+				{
+					"fluid": {
+						"max": "4.75rem",
+						"min": "2rem"
+					},
+					"name": "2X-Large",
+					"size": "4.75rem",
+					"slug": "2x-large"
+				}
+			]
+		}
+	},
+	"styles": {
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--involve)"
+				}
+			}
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--involve)"
+		}
+	},
+	"version": 3,
+	"title": "Involve"
+}

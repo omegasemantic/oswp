@@ -1,0 +1,36 @@
+# ACF Local JSON — permissions approach
+
+## Principle
+Don't fight WordPress/ACF's default ownership. The `www-data` user (inside
+the Docker container) writes these files; let it keep owning them. Only
+intervene when *you* (vim, as `simon`) actually need to write.
+
+## Standing setup
+- `acf-json/` folder: `chmod 777` (already done). This lets `www-data`
+  create/write new files there without needing ownership changes.
+- Do **not** `chown` individual JSON files to `simon`. Ownership will just
+  revert to `www-data` on the next GUI save anyway — chasing it is wasted
+  effort.
+
+## Day to day
+- **Reading** (`cat`, `grep`, `git diff`, `git add`) — works regardless of
+  file ownership. No action needed.
+- **Editing in vim** — try it first, do nothing preemptively. If a save
+  fails (vim reports readonly / permission denied):
+  ```bash
+  sudo chmod 666 <path-to-file>.json
+  ```
+  This fixes that one file without touching ownership.
+
+## If this becomes frequent / annoying
+If the `chmod 666` step is needed often enough to be irritating, that's
+the signal to stop doing it manually — options at that point (not needed
+now):
+- Add `simon` to the `www-data` group + set the folder's setgid bit so new
+  files inherit group-write automatically.
+- Re-run `chmod -R 777 acf-json/` periodically as a blanket reset instead
+  of per-file fixes.
+
+## Not doing right now
+No automation, no group/setgid setup — parking those unless the manual
+`chmod 666` fallback actually recurs enough to be worth it.

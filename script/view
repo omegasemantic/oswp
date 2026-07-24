@@ -1,0 +1,275 @@
+Event: Raglan Creative Market
+  -- WordPress --
+  ID: 40
+  Slug: raglan-creative-market
+  Status: publish
+  WP Date (created): 2026-07-22T22:51:23
+  Modified: 2026-07-22T22:51:24
+  Link: http://localhost:8080/event/raglan-creative-market/
+  -- Taxonomy --
+  Category: Market
+  Venue: Off-Site
+  -- ACF --
+  event_date: 2026-08-09 00:00:00
+  event_end: 
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: —
+  attendance_type: going
+  attendance_note: Free entry, just turn up
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Movie: Fackham Hall
+  -- WordPress --
+  ID: 38
+  Slug: movie-fackham-hall
+  Status: publish
+  WP Date (created): 2026-07-22T22:46:11
+  Modified: 2026-07-22T22:46:12
+  Link: http://localhost:8080/event/movie-fackham-hall/
+  -- Taxonomy --
+  Category: Film
+  Venue: Theatre Workshop
+  -- ACF --
+  event_date: 2026-08-01 00:00:00
+  event_end: 
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: —
+  attendance_type: going
+  attendance_note: Online reserves close 1pm on the day; pay at door or EFTPOS
+  attendance_link: http://example.com/reserve
+  booking_required: true
+
+----------------------------------------
+
+Event: Ragtimers Ukulele Group
+  -- WordPress --
+  ID: 37
+  Slug: ragtimers-ukulele-group
+  Status: publish
+  WP Date (created): 2026-07-22T22:43:28
+  Modified: 2026-07-22T23:02:41
+  Link: http://localhost:8080/event/ragtimers-ukulele-group/
+  -- Taxonomy --
+  Category: Community Group
+  Venue: Eva's Room
+  -- ACF --
+  event_date: 2026-07-21 00:00:00
+  event_end: 
+  is_recurring: true
+  recurrence_day: monday
+  recurrence_frequency: weekly: Weekly
+  is_featured: —
+  attendance_type: interested
+  attendance_note: New Members Welcome
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Yoga Flow
+  -- WordPress --
+  ID: 36
+  Slug: yoga-flow
+  Status: publish
+  WP Date (created): 2026-07-22T22:41:37
+  Modified: 2026-07-23T07:26:16
+  Link: http://localhost:8080/event/yoga-flow/
+  -- Taxonomy --
+  Category: Class
+  Venue: Whare Tapere
+  -- ACF --
+  event_date: 2026-07-30 00:00:00
+  event_end: 
+  is_recurring: true
+  recurrence_day: monday
+  recurrence_frequency: weekly: Weekly
+  is_featured: —
+  attendance_type: going
+  attendance_note: Free for Raglan Gym members, $25 non-members
+  attendance_link: https://raglangym.co.nz/bookings/
+  booking_required: true
+
+----------------------------------------
+
+Event: Raranga Exhibition
+  -- WordPress --
+  ID: 35
+  Slug: raranga-exhibition
+  Status: publish
+  WP Date (created): 2026-07-22T22:37:58
+  Modified: 2026-07-22T22:37:59
+  Link: http://localhost:8080/event/raranga-exhibition/
+  -- Taxonomy --
+  Category: Exhibition
+  Venue: Gallery
+  -- ACF --
+  event_date: 2026-06-29 00:00:00
+  event_end: 2026-06-29 00:00:00
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: true
+  attendance_type: going
+  attendance_note: 
+  attendance_link: http://example.com
+  booking_required: —
+
+----------------------------------------
+
+Event: Pottery
+  -- WordPress --
+  ID: 27
+  Slug: pottery
+  Status: publish
+  WP Date (created): 2026-07-22T07:51:34
+  Modified: 2026-07-22T20:13:46
+  Link: http://localhost:8080/event/pottery/
+  -- Taxonomy --
+  Category: Class
+  Venue: —
+  -- ACF --
+  event_date: 2026-07-24 00:00:00
+  event_end: 2026-12-01 00:00:00
+  is_recurring: true
+  recurrence_day: —
+  recurrence_frequency: weekly: Weekly
+  is_featured: —
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Yoga
+  -- WordPress --
+  ID: 26
+  Slug: yoga
+  Status: publish
+  WP Date (created): 2026-07-22T07:50:45
+  Modified: 2026-07-22T07:50:46
+  Link: http://localhost:8080/event/yoga/
+  -- Taxonomy --
+  Category: —
+  Venue: —
+  -- ACF --
+  event_date: 2026-07-23 00:00:00
+  event_end: 
+  is_recurring: true
+  recurrence_day: —
+  recurrence_frequency: weekly: Weekly
+  is_featured: —
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Book Club
+  -- WordPress --
+  ID: 25
+  Slug: book-club
+  Status: publish
+  WP Date (created): 2026-07-22T07:49:56
+  Modified: 2026-07-22T07:49:56
+  Link: http://localhost:8080/event/book-club/
+  -- Taxonomy --
+  Category: —
+  Venue: —
+  -- ACF --
+  event_date: 2026-08-01 00:00:00
+  event_end: 
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: —
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Market
+  -- WordPress --
+  ID: 24
+  Slug: market
+  Status: publish
+  WP Date (created): 2026-07-22T07:49:24
+  Modified: 2026-07-22T07:49:25
+  Link: http://localhost:8080/event/market/
+  -- Taxonomy --
+  Category: —
+  Venue: —
+  -- ACF --
+  event_date: 2026-08-02 00:00:00
+  event_end: 
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: —
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Concert
+  -- WordPress --
+  ID: 23
+  Slug: concert
+  Status: publish
+  WP Date (created): 2026-07-22T07:48:35
+  Modified: 2026-07-22T07:48:35
+  Link: http://localhost:8080/event/concert/
+  -- Taxonomy --
+  Category: —
+  Venue: —
+  -- ACF --
+  event_date: 2026-07-28 00:00:00
+  event_end: 
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: true
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+
+Event: Miranda Exhibition
+  -- WordPress --
+  ID: 22
+  Slug: miranda-exhibition
+  Status: publish
+  WP Date (created): 2026-07-22T07:46:23
+  Modified: 2026-07-22T07:46:24
+  Link: http://localhost:8080/event/miranda-exhibition/
+  -- Taxonomy --
+  Category: —
+  Venue: —
+  -- ACF --
+  event_date: 2026-08-01 00:00:00
+  event_end: 2026-08-10 00:00:00
+  is_recurring: —
+  recurrence_day: —
+  recurrence_frequency: —
+  is_featured: true
+  attendance_type: —
+  attendance_note: 
+  attendance_link: 
+  booking_required: —
+
+----------------------------------------
+

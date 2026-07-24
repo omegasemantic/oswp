@@ -1,0 +1,146 @@
+/* ==========================================================================
+   Global
+   ========================================================================== */
+
+/* Font smoothing */
+body {
+	text-rendering: geometricprecision;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Link styles
+ * https://github.com/WordPress/gutenberg/issues/42319
+ */
+a {
+	text-decoration-thickness: 1px !important;
+	text-underline-offset: 0.1em;
+}
+
+/*
+ * Make sure footers have no margin.
+ * https://github.com/WordPress/gutenberg/issues/47637
+ */
+footer.wp-block-template-part {
+	margin-block-start: 0 !important;
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+/* Remove text decoration from links, show on hover */
+.no-underline a,
+.no-underline {
+	text-decoration: none;
+}
+
+.no-underline a:hover {
+	text-decoration: underline;
+}
+
+/* Custom ordering */
+.order-0 { order: 0; }
+.order-1 { order: 1; }
+.grow-0 { flex-grow: 0; }
+.grow { flex-grow: 1; }
+
+@media (min-width: 600px) {
+	.md\:order-0 { order: 0; }
+	.md\:order-1 { order: 1; }
+	.md\:grow-0 { flex-grow: 0; }
+	.md\:grow { flex-grow: 1; }
+}
+
+/* Outside strokes */
+.stroke-outside-10 {
+	box-shadow:
+		0 -5px 0 0 var(--wp--preset--color--theme-2),
+		0 5px 0 0 var(--wp--preset--color--theme-2);
+}
+
+/* Columns: prevent background bleed between columns */
+.wp-block-columns {
+	overflow: hidden;
+}
+
+/* ==========================================================================
+   Blocks
+   ========================================================================== */
+
+/* Categories List: remove bullets and left indent */
+.is-style-plain.wp-block-categories {
+	padding-left: 0;
+	list-style: none;
+}
+
+/* Categories List: dropdown */
+.wp-block-categories select {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	padding: var(--wp--preset--spacing--30);
+	width: 100%;
+	border-radius: 0;
+	background-color: var(--wp--preset--color--theme-2);
+	color: var(--wp--preset--color--theme-1);
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right var(--wp--preset--spacing--30) center;
+	padding-right: calc(var(--wp--preset--spacing--30) * 3);
+}
+
+/* Latest Posts: title */
+.wp-block-latest-posts .wp-block-latest-posts__post-title {
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.wp-block-latest-posts .wp-block-latest-posts__post-title:hover {
+	text-decoration: underline;
+}
+
+/* Latest Posts: author name */
+.wp-block-latest-posts .wp-block-latest-posts__post-author {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 400;
+}
+
+/* Jetpack: remove gap inside contact form */
+.editor-styles-wrapper
+.no-form-gap
+.jetpack-contact-form.is-layout-flex {
+	--wp--style--block-gap: 0 !important;
+	gap: 0 !important;
+}
+
+/* Bring block in front when using negative margins */
+.bring-forward {
+	position: relative;
+	z-index: 1;
+}
+
+/* Post Terms: toast style */
+.is-style-toast.wp-block-post-terms {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1px;
+}
+
+.is-style-toast.wp-block-post-terms a {
+	display: inline-block;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	border-radius: 9999px;
+	background-color: var(--wp--preset--color--theme-2);
+	color: var(--wp--preset--color--theme-1);
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: var(--wp--preset--font-size--x-small);
+}
+
+.is-style-toast.wp-block-post-terms a:hover {
+	text-decoration: underline;
+}

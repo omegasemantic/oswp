@@ -1,0 +1,195 @@
+# Sitrep / Handover — Raglan Arts Centre Rebuild — 24 July 2026
+
+Supersedes/extends `sitrep-2026-07-23.md` (schema build) and the "Session 2"
+handover (theme/display, ACF shortcode debugging). Read those first for
+unchanged context. This document covers today's session: CLI-first schema
+workflow, ACF Local JSON bootstrap, and the staff/coordinator build.
+
+## Project one-line summary
+Unchanged. Rebuilding raglanartscentre.co.nz on WordPress; `event` CPT as
+single source of truth; display views layered on top; no in-house checkout.
+
+## Environment (unchanged from prior sessions)
+- Local WordPress via Docker Compose, `~/oswp` (Crostini/ChromeOS Linux).
+- Containers: `oswp-wordpress-1`, `oswp-db-1`. Site: `http://localhost:8080`.
+- WP-CLI: `docker exec -it oswp-wordpress-1 wp <command> --allow-root`
+- Theme: `twentytwentyfive` (active). Plugins: ACF (free), CPT UI, Code
+  Snippets (installed but currently unused — empty, confirmed this session).
+- Repo: `~/oswp`, git-tracked to `origin/main`. `.gitignore` already
+  correctly excludes `wp-content/uploads|upgrade|cache`. **Today's changes
+  are NOT yet committed** — see Immediate Next Steps.
+
+## This session's focus: CLI-first schema workflow, proven end to end
+
+### Core working principle established
+User's explicit priority: work should **live in the GUI when viewed there**,
+not be a CLI-flavoured translation of GUI work. One-directional discipline —
+vim writes, GUI only ever reads/displays — is what makes this true. GUI
+edits still risk creating DB-stored shadows (per prior sitrep's `theme.json`
+warning); same risk class applies to ACF field groups without Local JSON.
+
+### ACF Local JSON — bootstrapped and proven working
+- Filters added to `~/oswp/wp-content/themes/twentytwentyfive/functions.php`
+  (save_json / load_json → `acf-json/` folder in the active theme).
+- One-time GUI touch required to trigger first export (opened "Event
+  Details" field group, clicked Update — no field changes made). This is
+  the *only* unavoidable GUI step; ACF has no CLI export command.
+- **Bidirectional by design**: GUI saves re-export to the JSON file
+  automatically going forward. No separate export step needed after the
+  first bootstrap. If a non-CLI colleague edits via GUI later, `git diff`
+  on `acf-json/` shows exactly what changed.
+- Known risk, not yet mitigated: near-simultaneous CLI + GUI edits to the
+  same field group → last-write-wins, no conflict markers (unlike git
+  merges). Not a problem today (single user), worth remembering before
+  handing GUI access to a second person.
+
+### Permissions issue hit and resolved — WILL RECUR, documented
+**Root cause**: WordPress container runs as `www-data`; Crostini user is
+`simon`. Files/folders created by WP (via GUI saves) are `www-data`-owned.
+Files edited via vim need `simon` write access. Two collisions hit this
+session:
+1. `functions.php` — originally `www-data`-owned, blocked vim save.
+   Fixed via `chown -R simon:simon` on the whole theme folder.
+2. `acf-json/` folder itself — after the chown above, the *folder* was
+   `simon`-owned but not group/world-writable, so `www-data` silently
+   failed to write the JSON export (no error shown, just an empty
+   directory). Fixed via `chmod 777` on the folder.
+3. **Follow-on, recurring**: any file `www-data` writes into that `777`
+   folder still comes out `www-data`-owned at `644` — not writable by
+   `simon`. Hit this again when overwriting `group_....json` via a script
+   (`qq`, a `cat`-based wrapper) — got `Permission denied`, silently
+   fell through to reporting stale "valid JSON" from the *unchanged* old
+   file. Fixed each time via `chmod 666` on the specific file.
+
+**Decided approach** (see `acf-json-permissions-howto.md`, already shared):
+don't fight `www-data` ownership by re-chowning repeatedly. Leave
+`acf-json/` at `777`. If a specific file resists a vim/script write,
+`chmod 666` that file. Reading (cat/grep/git diff) never needs any of
+this — only writing does. **This will recur on every brand-new field
+group's first export** (existing/already-`chmod`-666'd files are fine
+going forward).
+
+### Staff / Coordinator — built end to end, verified via REST
+Real-world worked example, chosen to test the whole CLI schema pattern
+before generalising into a "toolkit."
+
+1. **`staff` taxonomy** — registered via hand-written `register_taxonomy()`
+   in `functions.php` (not CPT UI's GUI — deliberate, to stay fully
+   file-based/CLI). Attached to `event`, non-hierarchical (flat name list,
+   not categories/tags-with-parents), `show_in_rest: true` (required for
+   REST/`eventview` visibility — easy to omit by accident).
+2. **Terms created** via `wp term create` — two real names used (Rodger
+   Gallagher, Simon Kearns; IDs 25, 26) rather than placeholder data.
+   Wrapped in a small script, `addstaff.sh`. **Not idempotent** — re-running
+   creates duplicate terms with numbered slugs rather than erroring or
+   updating. Acceptable for now (user is aware, comments lines out
+   manually); worth a name-exists-check guard if it becomes a real toolkit
+   entry later.
+3. **`coordinator` field added** to the `event` field group's JSON
+   (`acf-json/group_6a606d82f3bb0.json`) — ACF type `taxonomy`, pointing at
+   `staff`, single-select (`field_type: select`, `multiple: 0`),
+   `add_term: 0` (deliberately prevents typing new names directly into the
+   event editor — coordinators must already exist as a term),
+   `return_format: id`. Added via a full-file `cat > file <<'EOF'`
+   overwrite (after the chmod 666 fix above), not manual vim insertion —
+   avoided bracket/comma-matching risk. **Field key
+   (`field_coordinator001`) is hand-typed, not ACF's usual long hash** —
+   functionally fine, cosmetically nonstandard; flag if collisions ever
+   become a real concern (very unlikely at this scale).
+4. **Assigned**: event ID 40 ("Raglan Creative Market" — a real,
+   venue-backed event, not one of the dummy records) → Rodger Gallagher,
+   via `wp post term set 40 staff "Rodger Gallagher"`.
+5. **Verified via REST**, two independent angles agreeing:
+   ```
+   curl -s "http://localhost:8080/wp-json/wp/v2/event/40" \
+     | jq '{title, coordinator: .acf.coordinator, staff_taxonomy: .staff}'
+   → coordinator: 25, staff_taxonomy: [25]
+   ```
+   User's reaction: pleased — reads `25` correctly as "a lookup," matching
+   their relational-DB mental model rather than reading it as broken/wrong.
+
+### Working scripts produced this session (rough, not yet a "toolkit")
+All in `~/oswp/script/`. **User has explicitly deferred toolkit
+consolidation to a future session** — these are working proofs, not
+finished tools:
+- `eventview` — plain-text field:value dump of one/all events (WP core +
+  taxonomy-resolved + ACF layers). **Not yet updated** to resolve
+  `coordinator`'s term ID to a name (same pattern as existing
+  `venuename()` resolution — trivial follow-up).
+- `schemaview` — plain-text ACF field-group printout via WP-CLI. **Slow**
+  (~80 separate `wp` bootstraps for a modest schema) because it shells out
+  per-attribute rather than using one `wp eval` call. User confirmed this
+  is fine given low run-frequency; not fixed this session.
+- `addstaff.sh` — term-creation wrapper. Not idempotent (see above).
+- `event-set` — thin wrapper around `wp post meta update` / `wp post term
+  set`, drafted but **not yet tested against the real coordinator field**
+  (user paused to do the actual work via raw commands instead; wrapper
+  review deferred).
+- `schema-edit` — opens the Event Details JSON in vim directly, path
+  hardcoded to today's one field group. Not exercised this session (user
+  went with direct `cat`/heredoc approach instead once permissions got
+  fiddly).
+- `qq` — user's own wrapper around the `cat > file <<'EOF'` full-file
+  overwrite pattern. Worked, once the target file's permission was fixed.
+
+### Mental model / architecture, confirmed understood
+Three-layer distinction, explicitly walked through and confirmed by user:
+1. **`functions.php`** — rules (taxonomy registration, Local JSON paths).
+2. **`acf-json/*.json`** — schema/structure (what fields exist, what type).
+   File-based, git-diffable, nondestructive to data when fields are
+   added/removed. Renaming a field's `name` (not `label`) breaks the link
+   to existing data without deleting it — flagged as a caveat, not hit
+   today.
+3. **MySQL** (`wp_posts`/`wp_postmeta`/term tables) — actual data. No
+   files; always queried, never `cat`-able.
+User's summary, confirmed correct: "the JSON is a nondestructive update
+schema file, separate from data."
+
+Also clarified: no ACF Options Pages available (PRO-only feature) — so
+there is currently no genuinely global/cross-post-type field group
+possible; `group_6a606d82f3bb0.json` (Event Details, scoped to `event`)
+is the only field group in this project.
+
+## Immediate next steps (in order)
+1. **Commit today's changes** — nothing from this session is in git yet:
+   `functions.php` (Local JSON filters + staff taxonomy registration),
+   `acf-json/group_6a606d82f3bb0.json` (coordinator field), and any of
+   the new scripts worth keeping. Do this before further drift.
+2. **`eventview`: add coordinator name resolution** — mirror the existing
+   `venuename()` pattern so it prints "Rodger Gallagher" instead of `25`.
+3. **CLI search/query structure** — user wants example patterns for ad-hoc
+   REST/jq queries beyond what's in the old `curls` file (deduped,
+   fetch-once-to-variable style). Requested next session alongside #4.
+4. **CSS sandboxing** — user wants to know if it's safe to `.bak` the
+   current CSS approach and experiment freely. Not yet actioned; advice
+   pending, no CSS work started this session (custom.css enqueue pattern
+   was scoped in the theme-building thread but never implemented).
+5. **Toolkit consolidation** — explicitly deferred by user ("easier the
+   more I have played around"). Revisit once more scripts/patterns exist
+   to consolidate from. When it happens: idempotency guards, one
+   discoverable home (`script/`, already the de facto pattern), consistent
+   naming (verb-first for writes, `*view` suffix for reads — already
+   emerging organically).
+
+## Carried-forward TODOs (untouched, still open from prior sessions)
+Unchanged from the 23 July "Session 2" handover — recurrence_day REST bug,
+featured+date combo, frequency label cosmetic, Raglan Creative Market venue
+fix, Ragtimers past-date fix, retire unused `ticket_link` field, remove
+dummy records before showing stakeholders, static front page not yet
+configured, Single Event *template* still DB-only/unbuilt (separate from
+today's *field* work — not touched this session), Massively CSS extraction
+not started, venue-level ACF field group not started, ticketing
+consolidation conversation not started, real hosting/domain not started.
+
+## Working conventions (confirmed/reinforced this session)
+- Schema changes = vim/file edits. Data changes = `wp post`/`wp term`
+  commands. Never conflate the two categories.
+- Don't re-chown files in `acf-json/`; `chmod 666` the specific file if a
+  write fails. Ownership will always revert to `www-data` on the next GUI
+  save regardless — expected, not a bug.
+- One deliberate GUI touch is acceptable and sometimes unavoidable (first
+  Local JSON export, ACF's own field-group screen existing at all) — this
+  is different from *habitual* GUI use, which remains avoided.
+- User is deliberately building a personal CLI toolkit through real
+  examples rather than upfront design — expect more scripts, expect some
+  churn/replacement as patterns solidify.

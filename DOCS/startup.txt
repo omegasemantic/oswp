@@ -1,0 +1,57 @@
+# Raglan Arts Centre Website Rebuild — Startup Document
+
+## Context
+Raglan Old School Arts Centre currently runs on WordPress with the My Calendar plugin driving events, alongside a fragmented ticketing setup (in-house reservation system, Eventfinda, a separate Creative Raglan ticketing domain). The brief: the arts centre is a **facilitator**, not the public face of Raglan arts — the site should let artists' work draw visitors in, with calendar/ticketing as a secondary, functional layer.
+
+## Platform decision
+**WordPress (self-hosted, WordPress.org), not Jekyll.** Jekyll was considered but ruled out: the site needs non-technical staff editing, a calendar/booking layer, and forms — all of which require a dynamic CMS, not a static site generator.
+
+## Core design principle
+**"Everything time-bound and promotable is an event; everything else stays a static page."**
+
+The site is fundamentally a **database-driven events catalogue** — conceptually similar to an e-commerce catalogue, with "event" standing in for "product." One structured dataset, multiple display views drawn from it:
+
+- **Promotional view** (homepage tiles) — a curated, image-led subset (`featured = true`), seductive and selective. This is the "cold visitor" pathway.
+- **Informational view** (What's On / calendar) — the complete list, all events equal billing regardless of type (a weekly yoga class and a touring act sit identically here). This is the "warm visitor" pathway, and should be reachable via a persistent/sticky nav element, especially on mobile.
+- **Category/venue views** — filtered archives (Films, Music, Workshops; Gallery, Clay Shed, Theatre Workshop).
+
+The old calendar plugin conflated promotion and information in one dense view. The new model deliberately separates them — same data, different queries.
+
+## Data model (schema)
+Custom Post Type: `event`, with fields:
+- date/time (+ optional end date for multi-day exhibitions)
+- recurring flag (+ frequency, end date)
+- featured flag (+ optional priority)
+- venue (taxonomy)
+- category (taxonomy: exhibition/film/music/workshop/class/market)
+- ticket link (external URL — see ticketing note below)
+- image, description
+
+Built entirely via WordPress GUI tools (no hand-coding required): **Custom Post Type UI** for the post type/taxonomies, **Advanced Custom Fields** for the fields. REST API enabled on all fields for dev-time querying and proof-of-logic work.
+
+## Ticketing
+Scope boundary held deliberately narrow: **WordPress presents the catalogue; payment and booking stay external.** Each event carries a single `ticket_link` field pointing to whatever provider handles that transaction (current in-house system, Eventfinda, etc.) — this sidesteps needing to consolidate ticketing backends immediately. Note: the client has an existing Stripe account; whether to eventually bring checkout in-house via WooCommerce + Stripe is an open question, parked for later, not a blocker to current work.
+
+## Content ownership
+Office staff must be able to **update content, not alter design**. This only holds if all content lives in structured post types/fields (locked template, fixed fields) rather than free-form pages. The office manager's data entry is effectively the entire content strategy — the calendar is the single source of truth; nothing time-bound should exist outside it (no parallel spreadsheets, PDFs, or Facebook-only announcements).
+
+## Design direction
+- Mobile-first (design/bench-test on mobile, let desktop follow).
+- "Portfolio vibe" homepage — image-led, tile-grid style (informal reference: a personal Jekyll demo, not a template to copy) — not a catalogue-style listing.
+- Distinct, unmissable warm-visitor nav (sticky bar or prominent band) separate from the seduction-first hero.
+- Theme: general-purpose block theme (e.g. Kadence) rather than a folio-specific theme — flexible enough for both the image-led homepage and the functional admin layers (events, forms).
+
+## Working method
+1. Local WordPress install (LocalWP or Docker) — no hosting/domain needed yet.
+2. Build schema (CPT UI + ACF), no code.
+3. Seed realistic test data (~10–15 records covering recurring/one-off, featured/not, multiple venues/categories).
+4. Prove retrieval and filtering via REST API (`/wp-json/wp/v2/event`) and/or WP-CLI — plain-data proof before any display work.
+5. Resolve recurrence generation logic (the one technically fiddly piece).
+6. Validate the office-manager data-entry form for simplicity.
+7. Document schema for handover.
+8. Handover to design/display phase (Query Loop templates in the Site Editor) — designer inherits a proven dataset, not a data-modelling job.
+
+**Current phase focus**: steps 1–4 (database and schema only). Static pages, visual design, ticketing consolidation, and the WooCommerce/Stripe question are explicitly parked until the data layer is proven.
+
+## Real deployment (later)
+WordPress.org self-hosted on standard PHP/MySQL hosting (~$50–300/year) plus domain — full plugin freedom, no platform restrictions. WordPress.com (managed, $25–40/month at the tier needed for full plugin access) is a viable but more expensive alternative if zero server-maintenance responsibility is preferred.

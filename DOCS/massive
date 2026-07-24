@@ -1,0 +1,13 @@
+Massively already solved the hard design problem (hero tile grid, muted palette, restrained typography) — you're not designing from scratch, you're porting known-good CSS values into Twenty Twenty-Five's theme.json, which is a much smaller, more mechanical task than original design work. Twenty Twenty-Five supplies the WordPress machinery (Query Loop, template parts, Site Editor); Massively supplies the visual language (colours, fonts, spacing, image treatment). Neither fights the other — theme.json is precisely the file that exists to let you override a theme's defaults with your own values.
+
+Practical path from here:
+
+Get the real values — fetch the Massively source CSS (from HTML5 UP or the GitHub repo) to extract actual hex codes, font-family names, and spacing figures, rather than working from memory/description.
+Translate into theme.json — Twenty Twenty-Five's theme.json (accessible via Appearance → Editor → Styles, or directly on disk under wp-content/themes/twentytwentyfive/theme.json) controls the global palette, font choices, and spacing scale. You'd update the colour palette entries and font family definitions to match Massively's values — this cascades automatically across every block/template using theme.json tokens, without you touching individual blocks.
+Build the hero tile grid — Query Loop or Group block, Grid layout, styled with Massively's dark-overlay-on-image treatment (achievable via block-level Cover block settings — Cover blocks natively support a background image plus a dark overlay percentage, which is exactly this effect).
+Everything else stays plain Twenty Twenty-Five, now automatically reflecting the Massively palette/type via theme.json, satisfying the "table setting, not building elements" approach from earlier.
+
+Want me to pull the actual Massively CSS source now and extract real values (fonts, hex codes, spacing) to hand you as a concrete starting theme.json patch?
+
+
+
