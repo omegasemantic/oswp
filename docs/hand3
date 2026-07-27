@@ -1,0 +1,238 @@
+# Handover — Raglan Old School Arts Centre — 25 July 2026 (end of session)
+
+Supersedes the 24 July GUI/Template handover's "templates are GUI-primary"
+policy, and extends the earlier same-day handover with a full day's
+findings. This is the authoritative state as of session end.
+
+## Headline conclusion: the working paradigm, locked in
+
+**GUI builds and holds the schema. PHP reads it and renders it. No
+widgets.**
+
+- **GUI (ACF field groups, CPT UI, post-edit sidebar)** — owns schema
+  definition (what fields/taxonomies exist) and all data entry (actual
+  event details, staff assignments, etc.). This is the write side.
+- **Hand-written PHP template files** — read-only queries against that
+  data (`WP_Query`, `get_fields()`, `wp_get_post_terms()`), formatted
+  into HTML. No page template writes anything back. This is the read
+  side.
+- **"No widgets"** — Query Loop, Shortcode blocks, Custom Fields block,
+  block bindings were all tried and rejected (see below) as the
+  rendering mechanism for anything data-driven. Direct PHP replaces all
+  of them for that purpose. GUI/Site Editor stays fully valid for pages
+  that are genuinely hand-authored content (About Us, Privacy Policy) —
+  not deprecated, just a separate category of page.
+- **theme.json remains the design system**, GUI-edited via Site Editor's
+  Styles panel, for colours/fonts/spacing site-wide. PHP templates should
+  reuse its class names/variables rather than reinventing styling.
+  Genuinely bespoke rules (e.g. a conditional "red when low" state) are
+  the one legitimate case for hand-written CSS in `custom.css`.
+
+## Why this changed: the bug that forced it
+
+ACF shortcodes (`[acf field=...]`) lose post context inside a Query Loop
+block — each tile is a different post, but the Shortcode block relies on
+`global $post` rather than being context-aware like native blocks (Post
+Title, Post Date). Result: field labels rendered, values stayed blank,
+across every field, on every tile.
+
+Ruled out before concluding this:
+- Confirmed real data exists on the underlying posts (`jq` against
+  exported JSON, `wp post meta`).
+- Confirmed identical shortcode syntax works fine on a true single-post
+  page — proving it's a loop-context bug, not a field-name/data problem.
+- Searched for "Custom Fields"/"Post Meta" block (context-aware
+  alternative) — not available in this install.
+- Searched for block-bindings UI (also context-aware) — not discoverable
+  either (no chain/link icon found on blocks).
+
+Moved to hand-written PHP as an explicit **experiment** (stated fallback:
+return to GUI if it failed). It didn't fail — proof of concept confirmed
+working same day.
+
+## Second major finding: taxonomy fields need a different accessor
+
+`get_fields()` / `get_field()` only reaches plain ACF fields stored in
+postmeta. Three fields in the `event` schema are actually **taxonomy**
+fields, not postmeta:
+
+- `coordinator` (ACF field, type `taxonomy`, taxonomy = `staff`)
+- `venue` (taxonomy `venue`)
+- `event_category` (taxonomy `event_category`)
+
+These do not appear in `get_fields()` output at all — not blank, simply
+absent. Confirmed via `wp post meta get 40 coordinator` returning nothing
+despite the taxonomy assignment being genuinely present (`wp post term
+list 40 staff` correctly showed Rodger Gallagher assigned).
+
+**Fix, now applied in all PHP templates that need it:**
+```php
+$terms = wp_get_post_terms( $post_id, 'staff' ); // or 'venue' / 'event_category'
+$names = wp_list_pluck( $terms, 'name' );
+```
+Not `get_the_title()` (that's for post-object/relationship fields, not
+taxonomy terms — an earlier draft used this incorrectly for `venue` and
+has since been corrected).
+
+## Taxonomy registration inconsistency — found and fixed
+
+`venue` and `event_category` were registered via the **CPT UI plugin**
+(GUI-managed, stored in `wp_options` under `cptui_taxonomies`), both
+correctly `hierarchical => true` (renders as a checklist in the post
+sidebar).
+
+`staff` was found to be registered separately, by hand, in
+`wp-content/themes/twentytwentyfive/functions.php`, with
+`hierarchical => false` — this is why it rendered as a freeform tag-input
+box instead of a checklist, inconsistent with the other two.
+
+**Resolved this session:**
+1. Deleted the hand-written `register_taxonomy('staff', ...)` block from
+   the parent theme's `functions.php` (confirmed clean removal via
+   `php -l` and a follow-up grep — no orphaned code, no remaining
+   references).
+2. Re-registered `staff` through CPT UI, `hierarchical => true`,
+   attached to `event` — now consistent with `venue`/`event_category`.
+3. Existing term data (Rodger Gallagher, Simon Kearns) was **not**
+   deleted and survived the re-registration — taxonomy registration and
+   term data are independent; removing/re-adding the registration code
+   doesn't touch `wp_terms` rows.
+
+**Decision locked in:** all taxonomies for this site go through CPT UI
+going forward — no more hand-written `register_taxonomy()` calls. One
+consistent place to define/manage taxonomy structure.
+
+## Child theme created and active
+
+`wp-content/themes/oswp-child/` — proper child theme (`Template:
+twentytwentyfive` header in `style.css`), **active** (confirmed via `wp
+theme list`). Created because hand-editing the parent theme's files
+directly risked losing changes on a Twenty Twenty-Five update.
+
+Contains:
+- `page-next7days.php` — see below
+- `page-events-schema.php` — see below
+- `page-helloworld.php` — playground/experimentation page, working
+- `assets/css/custom.css` — migrated from parent, enqueue hook copied
+  into child's `functions.php`
+- `functions.php` — currently just the `custom.css` enqueue hook; no
+  taxonomy/schema registration lives here (that's all CPT UI/ACF now,
+  per the locked-in decision above)
+
+Repo-root symlink `custom.css` repointed (`ln -sf`) from the parent
+theme's copy to the child theme's copy.
+
+**Cleanup not yet done:** the original `page-next7days.php` may still
+exist in the *parent* theme folder (harmless — child theme takes
+precedence — but worth deleting to avoid future confusion about which
+copy is live).
+
+## Pages that exist right now (`wp post list --post_type=page`)
+
+| ID  | Title | Slug | Status | Notes |
+|-----|-------|------|--------|-------|
+| 109 | Hello World | `helloworld` | publish | playground page, working |
+| 108 | Events Schema | `events-schema` | publish | full dump, no filter |
+| 101 | bonny | (none) | draft | untouched today |
+| 103 | (none) | (none) | draft | untouched today |
+| 92  | **Coming soon** | `next7days` | publish | **title is stale/wrong — says "Coming soon" but slug and content are the real events-in-7-days page. Needs `wp post update 92 --post_title="Next 7 Days"`.** |
+| 55  | (none) | `grid` | publish | tile-grid page, now the site's static front page |
+| 3   | Privacy Policy | `privacy-policy` | draft | untouched |
+| 2   | Sample Page | `sample-page` | publish | untouched |
+
+## What's confirmed working right now
+
+- **`/next7days/`** — full proof-of-concept: `meta_query` date-range
+  filter (today → +7 days), `get_fields()` for plain fields,
+  `wp_get_post_terms()` for staff/venue/event_category, all correctly
+  resolved and live-queried. This is the reference pattern — every other
+  event-related page is a subset of it.
+- **`/events-schema/`** — full dump, no date filter, same field/taxonomy
+  resolution logic. Useful as a permanent debugging/reference tool (kept
+  deliberately, not just a one-off diagnostic).
+- **`/helloworld/`** — trivial playground page and `date()` call,
+  confirms dynamic PHP execution is working end-to-end. **`custom.css`
+  changes not yet confirmed visually applying** — file loads correctly
+  per server logs (200 response), but was found read-only on host
+  filesystem (`root`/`www-data`-owned from earlier `docker exec`
+  creation) and a test rule (`h1 { color: darkred; }`) had not yet been
+  verified to render before session end. **First thing to check next
+  session.**
+- **CLI script: `events-schema-cli.sh`** — same combined dump, printed
+  directly to terminal via `wp eval`, no browser/page needed. Useful for
+  piping into `jq` directly against live data instead of a static
+  export.
+- **Static front page** — `show_on_front` = `page`, `page_on_front` =
+  `55`, set via `wp option update`. Not yet visually verified that the
+  tile-grid renders correctly as the front page (spacing/width can
+  differ for a front page vs. a regular page).
+
+## Known environment gotchas (hit multiple times today — worth having
+handy)
+
+- **`docker exec -it` + piped heredoc fails**: "cannot attach stdin to a
+  TTY-enabled container because stdin is not a terminal." Fix: drop `-t`,
+  use `-i` only, for any non-interactive command receiving piped input
+  (heredocs, loops).
+- **Host-side file permissions**: `wp-content` is owned by
+  `www-data`/`root` inside the container. Direct `mkdir`/`touch`/vim edits
+  from the host shell can fail with `Permission denied`, or succeed but
+  leave files unwritable later (as happened with `custom.css` this
+  session). Workarounds used today: create/edit via `docker exec ...
+  bash -c "cat > ..." << 'EOF'`, or `sudo chown simon:simon <file>` once,
+  after which normal host-side vim editing works.
+- **Slug vs. title vs. typed URL mismatches**: caused real confusion
+  twice today (`hello-world` vs `helloworld`, page 92's stale "Coming
+  soon" title). WordPress matches purely by slug for template hierarchy
+  and URL routing — title is cosmetic and can drift independently. Worth
+  checking `wp post list` slugs directly rather than trusting a typed URL
+  or a page title when something seems "stuck."
+- **`while read` loops piping into `docker exec -it`**: same TTY problem
+  as heredocs — every iteration fails identically. Use `-i` inside the
+  loop body.
+
+## Suggested next steps, in order
+
+1. **Fix `custom.css` visual confirmation** — verify the test rule
+   actually renders on `/helloworld/`, hard-refresh to rule out cache,
+   confirm `chown` fix was sufficient.
+2. Fix page 92's stale title (`wp post update 92 --post_title="Next 7
+   Days" --allow-root`).
+3. Delete the redundant `page-next7days.php` copy from the parent theme
+   folder if still present.
+4. Verify page 55 renders correctly as the static front page (visual
+   check only, not yet done).
+5. Build out `page-next7days.php` further per the "design boundary"
+   discussion — reuse Twenty Twenty-Five's block-editor wrapper markup
+   (`wp-block-group`, spacing preset variables) so PHP-rendered pages
+   visually match GUI-built ones, rather than sitting unstyled.
+6. Once `next7days` is fully styled and stable, build `single-event.php`
+   the same way (no `WP_Query` loop needed — ACF/taxonomy calls resolve
+   against the current post automatically on a true single-post page).
+   This replaces Site Editor template 60 for the `event` post type.
+7. Featured images: not yet implemented. Plan agreed — upload via GUI
+   Media Library (genuinely the easier tool for that one step), assign
+   via `wp post meta update <id> _thumbnail_id <attachment_id>`, display
+   via `get_the_post_thumbnail()` / `get_the_post_thumbnail_url()` in
+   PHP templates. Not yet needed by any current event but flagged as
+   coming.
+8. Recurring events gap (noted, not yet addressed): `event_date` stores
+   only the series *start* date for recurring events (Yoga, Pottery,
+   Ragtimers), so the `next7days` date filter correctly excludes
+   recurring events whose start date is outside the 7-day window even
+   though they have an occurrence this week. No "next occurrence date"
+   currently exists in the schema. Worth deciding whether this needs
+   solving (extra field/logic) or is acceptable as-is for now.
+
+## Environment (unchanged)
+
+- Local WordPress via Docker Compose, `~/oswp`. Site:
+  `http://localhost:8080`.
+- Active theme: **`oswp-child`**.
+- WP-CLI: `docker exec -i oswp-wordpress-1 wp <cmd> --allow-root` (note:
+  `-i` not `-it` for piped/scripted commands — see gotchas above).
+- Repo `~/oswp`, git-tracked. **Not yet committed as of session end** —
+  today's changes (child theme, `functions.php` edit removing the old
+  `staff` registration, new page templates, CPT UI taxonomy change) are
+  substantial and worth a clean commit before the next session, ideally
+  with a commit message summarising the PHP-template pivot.

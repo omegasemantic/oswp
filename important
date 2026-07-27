@@ -1,0 +1,94 @@
+# IMPORTANT — ACF Field Renaming Risk
+
+## The rule
+
+**Changing an ACF field's Name (not Label) after real data exists is
+equivalent to abandoning that field and starting a new one.**
+
+- The **Label** is just what's shown in the wp-admin edit screen —
+  changing it is always safe, has zero effect on stored data or on any
+  PHP/query code.
+- The **Name** is the literal key used to store and retrieve the value
+  in WordPress's `wp_postmeta` table. There is no indirection — ACF's
+  "Name" *is* the database key.
+
+Renaming the Name field does not move, copy, or migrate the existing
+stored value. The old data stays exactly where it was, under the old
+key — but nothing looks for it there anymore, so it becomes invisible
+(not deleted). `get_fields()`, `get_field()`, and any PHP referencing
+the field by its old name will silently return nothing for that field,
+on every existing post, with no error.
+
+## Why there's no automatic fix
+
+This isn't an ACF bug or a workflow gap — it's structural. WordPress's
+postmeta table is a flat key-value store with no schema-migration or
+rename-tracking mechanism. A "rename" is, at the database level,
+indistinguishable from deleting one field and creating an unrelated new
+one. Any custom-fields system built on top of WordPress has this same
+constraint.
+
+## The real risk: silent data loss, not just silent absence
+
+If a post is **re-saved** while a field is in this "renamed but not
+migrated" state, the edit screen will show the field as empty (since it's
+now looking under the new name, finds nothing), and saving will write
+*emptiness* to the new key — while the real value sits untouched, now
+permanently orphaned, under the old key. The data isn't recovered by
+this save; it's just left behind for good, unless someone specifically
+thinks to check the old key with `wp post meta get` before that happens.
+
+## Confirmed today
+
+Renamed `event_end`'s field Name to `ends` (label change to "Ends" was
+the actual intent). Result: Miranda Exhibition (event ID 22) showed no
+end date at all in `events-schema-cli.sh` output — the value was still
+present and recoverable:
+```bash
+docker exec -i oswp-wordpress-1 wp post meta get 22 event_end --allow-root
+# → 2026-08-10 00:00:00
+```
+Confirmed genuinely still in the database, just no longer being read.
+No post had been re-saved yet, so no data was actually lost — but this
+was close to the destructive scenario described above.
+
+## The fix, this time (revert)
+
+Since the intent was only ever a label change, revert the Name back to
+`event_end` in the ACF Local JSON file:
+```bash
+grep -n '"name": "ends"' wp-content/themes/twentytwentyfive/acf-json/group_6a606d82f3bb0.json
+```
+Change `"name": "ends"` back to `"name": "event_end"`. Keep
+`"label": "Ends"` as-is — that was the correct, intended change.
+`get_fields()` will immediately find the existing `event_end` postmeta
+again on every post, no data migration needed, since nothing was ever
+actually moved.
+
+## The general fix, going forward (if a real rename is ever needed)
+
+If a field's Name genuinely needs to change (not just its label), run a
+one-time bulk migration immediately after the rename, before any post
+gets re-saved:
+```bash
+docker exec -i oswp-wordpress-1 wp post list --post_type=event --field=ID --allow-root | \
+while read id; do
+  old_value=$(docker exec -i oswp-wordpress-1 wp post meta get "$id" OLD_FIELD_NAME --allow-root 2>/dev/null || echo "")
+  if [ -n "$old_value" ]; then
+    docker exec -i oswp-wordpress-1 wp post meta update "$id" NEW_FIELD_NAME "$old_value" --allow-root
+  fi
+done
+```
+Replace `OLD_FIELD_NAME`/`NEW_FIELD_NAME` accordingly. Run this once,
+immediately, right after the rename — every post's data moves cleanly
+to the new key, nothing orphaned, nothing lost.
+
+## Standing rule
+
+- Relabeling a field: always safe, do it via GUI or JSON, no follow-up
+  needed.
+- Renaming a field's actual Name on a schema that already has live
+  data: **never do this without immediately running the migration
+  script above.** Treat "rename the Name" and "run the migration" as
+  one atomic action, always, no exceptions — never rename and move on
+  without the follow-up step.

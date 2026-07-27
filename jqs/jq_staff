@@ -1,0 +1,1 @@
+bash events-schema-cli.sh | jq --arg q "$1" '[.[] | select(.staff[]? | ascii_downcase | startswith($q | ascii_downcase)) | {id, title, event_date, event_end, staff, event_summary}]'

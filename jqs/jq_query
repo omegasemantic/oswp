@@ -1,0 +1,1 @@
+bash events-schema-cli.sh | jq '[.[] | select(.is_featured == true) | {id, title, event_date, event_end, recurrence_day, recurrence_frequency, the_content}]'

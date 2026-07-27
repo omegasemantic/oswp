@@ -1,0 +1,151 @@
+# Sitrep — Raglan Old School Arts Centre — 25 July 2026 (session 3)
+
+Continues from the end-of-session handover earlier today. This session:
+CSS cleanup, DRY refactor, theme.json orientation, permissions housekeeping.
+
+## What changed this session
+
+**DRY refactor — done.** `oswp_get_event_record( $post_id )` added to
+`functions.php`: single source of truth for plain ACF fields + the three
+taxonomy relationships (staff/venue/event_category). Previously
+duplicated across four files; now all four call the one function:
+- `single-event.php`
+- `page-events-schema.php`
+- `page-next7days.php`
+- `events-schema-cli.sh` (via `wp eval`, which runs inside full WP
+  bootstrap, so it can call theme functions same as any template)
+
+**Not yet done:** `oswp_hide_if_empty()` still declared locally inside
+`single-event.php` rather than moved to `functions.php`. Low risk today
+(single-post template, loads once per request) but same rationale as the
+bigger refactor — move it for consistency, avoids a "cannot redeclare
+function" risk if ever reused elsewhere. Flagged, not urgent.
+
+**`custom.css` — cleaned up and reorganised.** Was previously a flat,
+uncommented list of rules including two invalid empty `color: ;`
+declarations (harmless — browsers silently drop them — but dead weight)
+and a `#main { background: red; }` rule that looked like an early
+loading-test, left in. Rewritten with section comments (base / layout /
+components / utilities), invalid declarations flagged rather than
+guessed at, and — importantly — **`.is-hidden { display: none; }` was
+missing entirely**. `single-event.php`'s whole "PHP renders everything,
+CSS hides empty fields" design has been running without its actual hide
+rule in place until this session. Confirm on next page load that empty
+fields on `single-event.php` now genuinely disappear.
+
+**Design boundary set for `single-event.php`:** one wrapping
+`<div class="event-content-wrap">` added around all content (title
+through event-details section), styled via `custom.css`:
+```css
+.event-content-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+}
+```
+Header/footer remain full-width (untouched, outside this wrapper).
+Content column now capped and centred inside the full-width band.
+
+**Field-level CSS hooks confirmed as deliberate convention.** Every
+field's wrapper carries a class matching its schema key exactly
+(`field-event_date`, `field-venue`, `field-booking`, etc.) — mirrors the
+JSON dump's own field names, so HTML and data vocabulary stay in sync.
+Agreed as the pattern going forward for any new template.
+
+**Conditional display philosophy locked in:** PHP always retrieves and
+renders every field ("full noise") — no `if (empty())` guards deciding
+whether markup exists. Visibility is CSS's job exclusively
+(`.is-hidden` for "no data," case-by-case `.field-x` targeting for
+context-specific design choices, e.g. a future "featured card" hiding
+fields it doesn't want regardless of whether they have data). The two
+mechanisms are compatible and don't conflict — different reasons,
+same visual outcome, no interference between them.
+
+**Homepage (page 55, `grid`) — parked, to be deleted.** Confirmed as a
+GUI-built demo page, not worth reconciling against `single-event.php`'s
+styling. Decision: delete it later (not done this session), style
+`single-event.php` first as the actual design reference, and build a
+real homepage grid from that pattern afterward — not the other way
+round. Site is 100% dev, so no functional urgency to have any homepage
+working right now; `show_on_front`/`page_on_front` can stay pointed at
+55 harmlessly until it's actually deleted.
+
+## Conceptual ground covered (worth remembering, not code changes)
+
+- **PHP templates never appear in Site Editor's GUI template list.**
+  WordPress checks for a matching PHP file *first*; only falls through to
+  block templates (Site Editor-managed) if no PHP file exists. Once
+  `single-event.php` exists, template 60 (the old DB-based Site Editor
+  template) becomes permanently inert — still visible in the GUI, never
+  actually used. Worth deleting template 60 eventually to avoid future
+  confusion; not urgent.
+- **Redesigning `single-event.php`'s structure = editing the PHP file
+  directly.** No GUI equivalent exists once a PHP template is in place.
+  Confirmed as the expected, correct way forward — not a limitation.
+- **Template-parts / includes discussed as a future refactor**, not
+  applied yet. Rationale for deferring: real benefit appears once markup
+  needs reuse across multiple templates (e.g. once a homepage grid needs
+  the same "event card" display as `single-event.php`) — not needed while
+  there's only one real consumer of this markup. Correctly parked as
+  "later, triggered by actual duplication," not "never."
+- **theme.json walked through conceptually.** Established as the source
+  of every `var(--wp--preset--...)` value already in use
+  (`settings.spacing`, `settings.color.palette` specifically) — GUI
+  (Site Editor Styles panel) edits it, PHP/CSS consume its generated
+  variables. Not yet reviewed in detail against the user's actual file
+  contents — worth a follow-up pass to confirm what specific values
+  `spacing--60` etc. resolve to, and what colour names are available for
+  future use (e.g. a "low stock" red warning discussed hypothetically
+  earlier, wanting to use the theme's real palette rather than an
+  arbitrary hex value).
+- **`style.css` vs `custom.css` roles clarified:** `style.css` is
+  primarily declarative (the theme-header comment WordPress needs to
+  recognise the child theme) — real styling work deliberately kept in
+  `custom.css` instead, enqueued explicitly via `functions.php`. Not a
+  WordPress requirement, just the convention being followed.
+
+## Known housekeeping gaps (recurring theme across all sessions)
+
+- **File permission friction, again.** `single-event.php` needed a
+  `sudo chown simon:simon` before vim could edit it — same root cause as
+  every previous instance (files created via `docker exec` land owned by
+  `root`/`www-data`). Suggested but not yet applied: `sudo chown -R
+  simon:simon wp-content/themes/oswp-child/` once, recursively, to stop
+  hitting this file-by-file going forward.
+- **`child` symlink confirmed and explained** —
+  `~/oswp/child -> wp-content/themes/oswp-child/`, a convenience shortcut,
+  not a separate directory. No issue, just clarified during this session
+  after some confusion about what it was.
+- **Git commit still not confirmed done.** Same standing item from
+  yesterday's handover — today's changes (single-event.php, the DRY
+  refactor, custom.css rewrite, image size registration) are substantial
+  and still not confirmed committed.
+
+## Suggested next steps, in order
+
+1. Confirm `.is-hidden` is now actually hiding empty fields on
+   `/event/raglan-creative-market/` (first real test of the fixed CSS).
+2. Move `oswp_hide_if_empty()` out of `single-event.php` into
+   `functions.php`, alongside `oswp_get_event_record()`.
+3. Run `sudo chown -R simon:simon wp-content/themes/oswp-child/` once, to
+   stop the recurring permissions friction.
+4. Delete page 55 (`grid`) and template 60 (old Site Editor single-event
+   template) once confident `single-event.php` is stable — both are
+   dead weight at this point.
+5. Do the theme.json deep-dive (spacing scale, colour palette actual
+   values) that was flagged but not completed this session.
+6. Revisit the recurring-events date-filter gap (`next7days` misses
+   recurring events whose original start date has passed) — still
+   unsolved, flagged in the previous handover, not addressed today.
+7. Commit today's work to git.
+
+## Environment (unchanged)
+
+- Local WordPress via Docker Compose, `~/oswp`. Site:
+  `http://localhost:8080`. Convenience symlink: `~/oswp/child` →
+  `wp-content/themes/oswp-child/`.
+- Active theme: `oswp-child`.
+- WP-CLI: `docker exec -i oswp-wordpress-1 wp <cmd> --allow-root` (`-i`
+  not `-it` for piped/scripted commands).
+- Recurring permission friction on files created via `docker exec` —
+  `sudo chown simon:simon <file>` (or `-R` on the whole theme folder) as
+  the standing fix.

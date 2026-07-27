@@ -171,23 +171,6 @@ add_filter( 'acf/settings/load_json', function( $paths ) {
 	return $paths;
 } );
 
-/**
- * Register 'staff' taxonomy — coordinators, attached to 'event'.
- */
-add_action( 'init', function() {
-	register_taxonomy( 'staff', 'event', array(
-		'label'             => 'Staff',
-		'labels'            => array(
-			'name'          => 'Staff',
-			'singular_name' => 'Staff Member',
-		),
-		'public'            => true,
-		'show_ui'           => true,
-		'show_in_rest'      => true,
-		'hierarchical'      => false,
-	) );
-} );
-
 
 add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style(

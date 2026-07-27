@@ -1,0 +1,78 @@
+/* ============================================
+   OSWP Child Theme — custom.css
+   Organised: base > layout > components > utilities
+   ============================================ */
+:root {
+    --sp-tiny:   var(--wp--preset--spacing--20);
+    --sp-xs:     var(--wp--preset--spacing--30);
+    --sp-sm:     var(--wp--preset--spacing--40);
+    --sp-md:     var(--wp--preset--spacing--50);
+    --sp-lg:     var(--wp--preset--spacing--60);
+}
+
+.event-details {color: red}
+* {
+    font-family: Georgia, serif;
+}
+pre, code {
+    font-family: monospace;
+}
+
+/* --- Base / global --- */
+body {
+    line-height: 1.2;
+    font-size: 1.2rem;
+    background: #ffc40c;
+    /* color: ;  <- was empty, invalid CSS. Browsers just ignore a blank
+       declaration like this, so it wasn't breaking anything, but it's
+       dead weight. Pick a real value or delete the line. Left commented
+       as a reminder — e.g. color: var(--wp--preset--color--contrast);
+       once you check what theme.json actually calls your text colour. */
+}
+
+h1 {
+    font-size: 1.2rem;
+}
+
+/* --- Block-specific overrides --- */
+.wp-block-post-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    /* color: ;  <- same issue as above, same fix needed */
+}
+
+.wp-block-post-excerpt__excerpt {
+    font-size: 1.2rem;
+}
+
+/* --- Layout --- */
+.event-content-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* #main { background: red; }
+   Commented out rather than deleted — this looks like an early test
+   rule (bright red background is a classic "can I see my CSS is
+   loading" check). Worth confirming #main is even a real ID in your
+   markup before reinstating; if it was just a loading-test, safe to
+   delete outright. */
+
+/* --- Visibility utility --- */
+/* Referenced by oswp_hide_if_empty() in single-event.php but was
+   missing from this file entirely -- fields marked is-hidden were
+   NOT actually being hidden until now. */
+.is-hidden {
+    display: none;
+}
+
+/* --- Field-specific overrides (populate as needed) ---
+   Example pattern for later, e.g. a "featured card" context that
+   wants to hide a field regardless of whether it has data:
+
+   .featured-card .field-attendance_note { display: none; }
+
+   Keep these below the utility rules above so they can override
+   .is-hidden's absence (i.e. deliberately SHOW something) if ever
+   needed — source order matters when specificity is equal.
+*/
