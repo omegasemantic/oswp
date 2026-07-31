@@ -24,6 +24,13 @@
  *    when a field value is empty, else ''. This is the mechanism
  *    behind single-event.php always rendering every field but
  *    visually hiding the blank ones.
+ *
+ * 5. oswp_page_start()/oswp_page_end(): Twenty Twenty-Five shell
+ *    wrapper (block-theme header/footer). Still used by pages not
+ *    yet migrated to Forty.
+ *
+ * 6. oswp_forty_start()/oswp_forty_end(): Forty shell wrapper, for
+ *    pages migrated to the new static-HTML shell. See handover notes.
  */
 
 add_action( 'wp_enqueue_scripts', function() {
@@ -51,7 +58,7 @@ function oswp_get_event_record( $post_id ) {
 	if ( ! is_array( $record ) ) {
 		$record = [];
 	}
-            $record['id']    = $post_id;
+	$record['id']    = $post_id;
 	$record['title'] = get_the_title( $post_id );
 
 	foreach ( [ 'staff', 'venue', 'event_category' ] as $taxonomy ) {
@@ -124,3 +131,163 @@ function oswp_page_end() {
 </html>
 	<?php
 }
+
+/**
+ * Register nav menu locations for the Forty shell.
+ *
+ * 'oswp-header': left unassigned in Appearance > Menus. wp_nav_menu()
+ * then falls back to wp_page_menu(), which auto-lists all published
+ * pages — no manual curation, matches current Page List behaviour.
+ *
+ * 'oswp-footer': a real menu, manually created and assigned via
+ * Appearance > Menus. Curated by hand — not automatic.
+ */
+function oswp_register_menus() {
+	register_nav_menus( array(
+		'oswp-header' => __( 'Header (auto — do not assign a menu here)', 'oswp-child' ),
+		'oswp-footer' => __( 'Footer (manual)', 'oswp-child' ),
+	) );
+}
+add_action( 'after_setup_theme', 'oswp_register_menus' );
+
+/**
+ * oswp_forty_start() / oswp_forty_end()
+ *
+ * Forty shell equivalent of oswp_page_start()/oswp_page_end(), for
+ * pages migrated to the new static-HTML Forty theme. Unlike Forty's
+ * original Jekyll build, header/footer menus are dynamic (WordPress
+ * nav menus), not hand-written per page.
+ *
+ * No buffer-before-wp_head() dance needed here (unlike the Twenty
+ * Twenty-Five version) — Forty's header/footer are plain static
+ * HTML, not block-rendered, so there's no dynamic block CSS to
+ * coordinate. Call oswp_forty_start() at the top of a page, put
+ * content inside <div id="main">, call oswp_forty_end() at the
+ * bottom.
+ */
+function oswp_forty_start() {
+	?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+<meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title><?php wp_title( '|', true, 'right' ); ?></title>
+<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<div id="wrapper">
+
+<header id="header">
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo"><strong><?php bloginfo( 'name' ); ?></strong></a>
+	<nav>
+		<a href="#menu">Menu</a>
+	</nav>
+</header>
+
+<nav id="menu">
+	<?php oswp_forty_nav_menu( 'oswp-header' ); ?>
+</nav>
+
+<div id="main" class="alt">
+<?php
+}
+
+function oswp_forty_end() {
+	?>
+</div><!-- #main -->
+
+<footer id="footer">
+	<div class="inner">
+		<?php oswp_forty_nav_menu( 'oswp-footer' ); ?>
+		<ul class="copyright">
+			<li>&copy; <?php bloginfo( 'name' ); ?></li>
+		</ul>
+	</div>
+</footer>
+
+</div><!-- #wrapper -->
+<?php wp_footer(); ?>
+</body>
+</html>
+	<?php
+}
+
+/**
+ * Renders a WP nav menu wrapped in <ul class="links"> to match
+ * Forty's CSS. If no menu is assigned to the location (e.g.
+ * oswp-header, left deliberately unassigned), falls back to an
+ * auto-generated list of published pages in the same markup shape.
+ */
+function oswp_forty_nav_menu( $location ) {
+	wp_nav_menu( array(
+		'theme_location' => $location,
+		'container'      => false,
+		'items_wrap'     => '<ul class="links">%3$s</ul>',
+		'fallback_cb'    => 'oswp_forty_page_menu_fallback',
+	) );
+}
+
+function oswp_forty_page_menu_fallback() {
+	echo '<ul class="links">';
+	wp_list_pages( array( 'title_li' => '' ) );
+	echo '</ul>';
+}
+
+/**
+ * Enqueue Forty's main.css for pages using oswp_forty_start()/end().
+ * Only loads assets copied into oswp-child/assets/ from Karamu —
+ * see handover notes for asset source.
+ */
+add_action( 'wp_enqueue_scripts', function() {
+	if ( ! file_exists( get_stylesheet_directory() . '/assets/css/main.css' ) ) {
+		return;
+	}
+	wp_enqueue_style(
+		'forty-main',
+		get_stylesheet_directory_uri() . '/assets/css/main.css',
+		array(),
+		filemtime( get_stylesheet_directory() . '/assets/css/main.css' )
+	);
+}, 21 );
+
+/**
+ * Enqueue Forty's JS (jQuery + skel + util + main.js) for pages
+ * using oswp_forty_start()/end(). Drives the menu toggle and, on
+ * the billboard homepage, the tile background-image mechanism.
+ * skel must load before main.js, which references it directly.
+ */
+add_action( 'wp_enqueue_scripts', function() {
+	$js_dir = get_stylesheet_directory() . '/assets/js/';
+	$js_uri = get_stylesheet_directory_uri() . '/assets/js/';
+
+	if ( ! file_exists( $js_dir . 'main.js' ) ) {
+		return;
+	}
+
+	wp_enqueue_script( 'jquery' );
+
+	wp_enqueue_script(
+		'forty-skel',
+		$js_uri . 'skel.min.js',
+		array( 'jquery' ),
+		filemtime( $js_dir . 'skel.min.js' ),
+		true
+	);
+
+	wp_enqueue_script(
+		'forty-util',
+		$js_uri . 'util.js',
+		array( 'jquery', 'forty-skel' ),
+		filemtime( $js_dir . 'util.js' ),
+		true
+	);
+
+	wp_enqueue_script(
+		'forty-main',
+		$js_uri . 'main.js',
+		array( 'jquery', 'forty-skel', 'forty-util' ),
+		filemtime( $js_dir . 'main.js' ),
+		true
+	);
+}, 21 );
