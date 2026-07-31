@@ -252,10 +252,13 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 21 );
 
 /**
- * Enqueue Forty's JS (jQuery + skel + util + main.js) for pages
- * using oswp_forty_start()/end(). Drives the menu toggle and, on
- * the billboard homepage, the tile background-image mechanism.
- * skel must load before main.js, which references it directly.
+ * Enqueue Forty's JS (jQuery + skel + scrolly + util + main.js) for
+ * pages using oswp_forty_start()/end(). Drives the menu toggle and,
+ * on the billboard homepage, the tile background-image mechanism.
+ * skel and scrolly must load before main.js, which calls both
+ * directly on document ready. scrollex deliberately left out —
+ * confirmed unused on simple content pages; add only if a console
+ * error names it specifically.
  */
 add_action( 'wp_enqueue_scripts', function() {
 	$js_dir = get_stylesheet_directory() . '/assets/js/';
@@ -276,9 +279,17 @@ add_action( 'wp_enqueue_scripts', function() {
 	);
 
 	wp_enqueue_script(
+		'forty-scrolly',
+		$js_uri . 'jquery.scrolly.min.js',
+		array( 'jquery' ),
+		filemtime( $js_dir . 'jquery.scrolly.min.js' ),
+		true
+	);
+
+	wp_enqueue_script(
 		'forty-util',
 		$js_uri . 'util.js',
-		array( 'jquery', 'forty-skel' ),
+		array( 'jquery', 'forty-skel', 'forty-scrolly' ),
 		filemtime( $js_dir . 'util.js' ),
 		true
 	);
@@ -286,7 +297,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_script(
 		'forty-main',
 		$js_uri . 'main.js',
-		array( 'jquery', 'forty-skel', 'forty-util' ),
+		array( 'jquery', 'forty-skel', 'forty-scrolly', 'forty-util' ),
 		filemtime( $js_dir . 'main.js' ),
 		true
 	);
