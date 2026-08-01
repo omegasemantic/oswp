@@ -2,6 +2,56 @@
    OSWP Child Theme — custom.css
    Organised: base > layout > components > utilities
    ============================================ */
+/* --- Single feature image + caption --- */
+img.force-square {
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	width: 100%;
+}
+.single-feature {
+	margin: 0 0 2em 0;
+}
+.single-feature img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border: 1px solid rgba(212, 212, 255, .1); /* Forty's own hairline convention, matches hr/table borders elsewhere */
+}
+.single-feature figcaption {
+	margin-top: 0.5em;
+	font-size: 0.8em;
+	font-weight: 300;
+	letter-spacing: 0.025em;
+	color: rgba(255, 255, 255, 0.6);
+	text-align: center;
+}
+
+.tagline {
+    font-size:0.7em;
+}
+
+
+/* --- Header / logo --- */
+#header .logo strong {
+	background-color: #9bf1ff;
+}
+#header .logo:hover strong {
+	background-color: #fff;
+}
+/* NOTE: removed a stray extra "}" that was here — unbalanced brace,
+   left over from earlier editing. */
+
+body.admin-bar #header {
+	top: 32px;
+}
+
+#header .logo img {
+	height: 1.65em;
+	width: auto;
+	clip-path: circle(40%);
+	vertical-align: middle;
+	margin-right: 0.5em;
+}
 
 /* --- Base / global --- */
 :root {
@@ -12,24 +62,37 @@
 	--sp-lg:   var(--wp--preset--spacing--60);
 }
 
-* {
-	font-family: Georgia, serif;
-}
-
 pre, code {
 	font-family: monospace;
 }
 
-body {
-	line-height: 1.2;
-	font-size: 1.2rem;
-	background: #fcdc15;
-	/* #ffc40c */
-}
+/* * { font-family: Georgia, serif; }
+   COMMENTED OUT — until today, custom.css loaded BEFORE main.css, so
+   this was always silently overridden on Forty pages by main.css's
+   own font (Source Sans Pro). Now that load order is fixed, this
+   would suddenly apply globally, including tiles/banner/every Forty
+   page — a real visual change, not something restored to "how it
+   was." Re-enable deliberately if you actually want Georgia
+   sitewide; otherwise it only belongs scoped to old Twenty
+   Twenty-Five pages if it was ever intentional there. */
 
-h1, h2 {
-	font-size: 1.2rem;
-}
+/* body { background: #fcdc15; }
+   COMMENTED OUT for the same reason — was invisible on Forty pages
+   until today's load-order fix; would now paint yellow over Forty's
+   navy design (header/tiles/footer all assume the dark palette).
+   Confirm whether yellow is still wanted, and if so, scope it to the
+   old shell only rather than applying globally — see note above
+   .myheader section. */
+
+
+ #banner h1 {font-size: 2.0em;}
+h1 {font-size: 2.0em;}
+
+ 
+/* --- ∗  COMMENTED OUT — same load-order issue. main.css sets h1 to 2.5em
+   for Forty's banner/headings; this would shrink them drastically
+   sitewide the moment it's re-enabled. If this was meant for old
+   Twenty Twenty-Five pages only, scope it there specifically. */
 
 /* --- Layout --- */
 #main.alt .inner {
@@ -42,59 +105,53 @@ h1, h2 {
 }
 
 /* #main { background: red; }
-   Commented out rather than deleted — early "is my CSS loading" test.
-   Confirm #main is a real ID in your markup before reinstating, or
-   delete outright if it was just a loading check. */
+   Early "is my CSS loading" test — safe to delete outright, or leave
+   commented as-is. */
 
-/* --- Components --- */
+/* --- Legacy: Twenty Twenty-Five shell only ---
+   Everything below targets block-editor classes (wp-block-*) that
+   don't exist on Forty pages at all — harmless there, but still
+   relevant for pages not yet migrated (next7days, recurring, etc).
+   Keep active until those pages are migrated or retired. */
 
-/* Outer header row: spreads brand (logo+title) left, nav right */
 .myheader {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 1rem 2rem; /* space above/below and left/right edge of header */
+	padding: 1rem 2rem;
 }
-
-/* Groups logo + site title together so space-between treats them as one unit */
 .header-brand {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem; /* space between logo and title */
+	gap: 0.75rem;
 }
-
-/* Logo size control — overrides WP's default image sizing */
 .myheader .wp-block-image img {
 	max-width: 42px;
 	height: auto;
 }
-
 .header-brand .wp-block-site-title {
 	margin: 0;
 	line-height: 1;
 }
-
 .header-brand .wp-block-site-title a {
 	display: inline-block;
 	vertical-align: middle;
 }
-
 .field-title {
 	margin-bottom: -15px;
 	margin-top: 10px;
 }
-
 .wp-block-post-title {
 	font-size: 1.2rem;
 	font-weight: bold;
 }
-
 .wp-block-post-excerpt__excerpt {
 	font-size: 1.2rem;
 }
 
 /* --- Visibility utility --- */
-/* Referenced by oswp_hide_if_empty() in single-event.php. */
+/* Referenced by oswp_hide_if_empty() in single-event.php. Required —
+   do not remove regardless of shell/theme. */
 .is-hidden {
 	display: none;
 }
@@ -104,12 +161,15 @@ h1, h2 {
    regardless of whether it has data:
    .featured-card .field-attendance_note { display: none; }
    Keep these below the utility rules above so they can override
-   .is-hidden's absence (i.e. deliberately SHOW something) if ever
-   needed — source order matters when specificity is equal.
+   .is-hidden's absence if ever needed — source order matters when
+   specificity is equal.
 */
 
-/* --- Page-specific overrides --- */
-.home h1.wp-block-post-title {
-	color: red;
-	display: none;
-}
+/* .home h1.wp-block-post-title { color: red; display: none; }
+   COMMENTED OUT — this currently hides the H1 on whatever page is
+   set as the homepage (page ID 55, .home class). Combining "color:
+   red" with "display: none" reads like an abandoned debug edit
+   (colour is pointless if the element's hidden), not a deliberate
+   design choice. Re-enable only if hiding the homepage title is
+   genuinely wanted — worth confirming the homepage still looks right
+   without it first. */
