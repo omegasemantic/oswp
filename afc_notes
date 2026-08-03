@@ -1,0 +1,10 @@
+## ACF field renaming/deletion — standing rule
+Changing an ACF field's Name (not Label) after real data exists
+detaches the existing data from view (not delete — still in
+`wp_postmeta` under the old key, recoverable, but invisible to
+`get_fields()` until fixed). Same caution applies to deleting a field:
+data isn't lost but can be orphaned. Label changes are always safe.
+Before any Name change or field deletion, check whether any events
+actually hold data under that key
+(`wp post meta get <id> <field_name> --allow-root`) and flag it to the
+user rather than assuming.

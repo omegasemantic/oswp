@@ -1,0 +1,9 @@
+Sitrep — Kubrick markup bug
+
+Symptom: /recurring/ (and likely other PHP pages) render a mix of correct new markup (our wrap-open/wrap-close wrapper) alongside old classic-theme header/footer markup (id="page", id="header", id="headerimg", WordPress-Kubrick-era, credited to "Michael Heilemann"). Sample page and block template parts confirmed clean — this is PHP-template-only.
+
+Ruled out so far: theme files (oswp-child, all others) — no match anywhere. Plugin files — no match. Code Snippets plugin — checked by name and by code content, no match. Page 128's stored post_content — empty, not the source. Active theme confirmed correctly as oswp-child.
+
+Not yet checked: a second/stale container serving port 8080, and WP transients/object cache.
+
+Continuing now with docker ps -a.

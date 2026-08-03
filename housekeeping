@@ -1,0 +1,38 @@
+# OSWP Forty Shell — Housekeeping
+
+Everything not big-ticket. To be tidied/reprioritised later.
+
+## Content decisions
+
+- **Billboard tile content** — `page-billboard.php` proves the
+  mechanism works but all six tiles currently point to `/ipsum/`
+  with Karamu's placeholder titles/images. Real tile targets and
+  copy not yet decided. (Depends on site map, TODO item 3.)
+
+- **Promote billboard to actual homepage** — set `front-page.php` +
+  `show_on_front`/`page_on_front` (currently page ID 55, slug
+  `grid`). Blocked on the item above.
+
+- **Logo PNG** — `#header .logo img` CSS is in place and working;
+  actual logo file not yet sourced/finalised (repo root has
+  `Logo.jpg`/`Racc.jpg`/`Rac.png` — worth checking if one of these
+  is already the intended logo before sourcing a new one).
+
+## Minor / nice-to-have
+
+- **CSS multi-column for markdown prose** — for short line-length
+  body text, use `columns: 2` on the rendered markdown container —
+  NOT Forty's `6u`/`12u` grid classes, which require manual content
+  splitting and don't auto-flow text. Depends on TODO item 1
+  (markdown pipeline) existing first.
+
+## Karamu repo (unrelated to OSWP itself)
+
+- `pasupe/` (Jekyll build output) was accidentally committed to git
+  alongside source — recommend `.gitignore`-ing it and untracking,
+  so it doesn't drift out of sync with source on future rebuilds.
+
+- GitHub push currently failing — "Permission to
+  omegasemantic/karamu.git denied to deploy key." Local `main` is
+  currently ahead of `origin/main`. Needs sorting on GitHub's side
+  (deploy key permissions).

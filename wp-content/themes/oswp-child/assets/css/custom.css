@@ -34,6 +34,7 @@ img.force-square {
 /* --- Header / logo --- */
 #header .logo strong {
 	background-color: #9bf1ff;
+	font-size: 0.9em;
 }
 #header .logo:hover strong {
 	background-color: #fff;
@@ -84,9 +85,11 @@ pre, code {
    old shell only rather than applying globally — see note above
    .myheader section. */
 
+/* body { background: #F8F9FA; } */
+
 
  #banner h1 {font-size: 2.0em;}
-h1 {font-size: 2.0em;}
+h1 {font-size: 1.3em;}
 
  
 /* --- ∗  COMMENTED OUT — same load-order issue. main.css sets h1 to 2.5em

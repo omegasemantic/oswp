@@ -1,1 +1,0 @@
-bash events-schema-cli.sh | jq '[.[] | select(.event_category[]? == "Film") | {id, title, event_date, event_end, event_category, event_summary}]'

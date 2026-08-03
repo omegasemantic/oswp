@@ -1,0 +1,17 @@
+**OSWP Forty shell — sitrep**
+
+**Done & committed:**
+- Menu locations (header auto, footer manual)
+- `oswp_forty_start()`/`oswp_forty_end()` shell, header/footer/menu toggle
+- Forty CSS/JS enqueued correctly (main.css, jQuery, skel, scrolly, util, main.js — load order fixed)
+- `page-ipsum.php` — plain content page, proven working
+- `page-billboard.php` — tile/background-image JS mechanism proven working, all links → `/ipsum/` placeholder
+- `custom.css` cleaned up, reorganised, loads after main.css (priority 22)
+
+**Outstanding:**
+1. Decide real tile content (currently placeholder Karamu titles/images, all → `/ipsum/`)
+2. Promote billboard to actual homepage (`front-page.php` + `show_on_front`/`page_on_front`, currently page ID 55)
+3. Logo PNG for header (`#header .logo img` CSS ready, image file not sourced yet)
+4. `body.admin-bar #header { top: 32px; }` — add to custom.css if you want header visible while logged in
+5. Old pages (`next7days`, `recurring`, etc.) still on Twenty Twenty-Five shell — migrate individually later if kept (mechanical: swap shell functions, rewrap markup)
+6. Housekeeping (not blocking): `pasupe/` build output got committed into Karamu's git history; GitHub push currently failing on deploy-key permissions

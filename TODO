@@ -1,0 +1,47 @@
+# OSWP Forty Shell — TODO (Big Ticket)
+
+Draft. Review and edit before treating as authoritative.
+
+1. **Markdown/ACF static-page authoring system**
+   - Goal: faster authoring, shared authoring (office staff), and
+     support for pages that are edited often (e.g. sponsor lists) —
+     without building a full CMS/schema solution.
+   - Design agreed: one ACF field ("Page Content — Markdown") + one
+     reusable WP Page Template (not a `page-{slug}.php` per page) +
+     Parsedown (vendored, not a plugin) to render it.
+   - New page creation stays CLI/maintainer-only. Editing existing
+     pages moves to the WP GUI for whoever has the role.
+   - Needs: a `content-editor` WP role — edit existing pages, cannot
+     create/publish/delete. WordPress doesn't cleanly separate
+     "edit" from "create" by capability alone, so this needs a
+     small custom capability + hidden "Add New" button. Not
+     watertight against a determined user, but sufficient for normal
+     office use.
+   - Not yet built. No code written.
+
+2. **Footer: link structure**
+   - Likely intent: separate static pages into footer-menu groupings
+     rather than one flat list. Started as "four dummy links," real
+     shape depends on item 3 (site map).
+   - Not yet built. No structure decided yet.
+
+3. **Site map**
+   - Needed before template decisions can be finalised. Only two
+     templates are locked in so far: billboard (`page-billboard.php`,
+     mechanism proven) and plain single page (`page-ipsum.php`
+     pattern, via `oswp_forty_start()`/`oswp_forty_end()`).
+   - This also decides the fate of the remaining Twenty
+     Twenty-Five–shell pages (`next7days`, `recurring`,
+     `events-schema`, `single-event`) — which stay and get migrated
+     to Forty vs which get deleted. CSS cleanup and PHP migration for
+     those pages both follow from that decision, so don't action
+     either separately until the site map settles it.
+
+4. **VPS staging deployment**
+   - Get a working copy live on the VPS so stakeholders can see dev
+     progress in real time, rather than reviewing screenshots/
+     localhost only.
+   - Not yet started. Will need the standard domain-swap step
+     (`siteurl`/`home` options, permalink flush) once a URL/subdomain
+     is chosen — flagged as straightforward in earlier discussion,
+     not yet executed.

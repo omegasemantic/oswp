@@ -32,6 +32,18 @@
  * 6. oswp_forty_start()/oswp_forty_end(): Forty shell wrapper, for
  *    pages migrated to the new static-HTML shell. See handover notes.
  */
+/**
+ * ACF Local JSON — sync field group definitions to/from theme files.
+ * Enables version-controlled, file-based schema editing.
+ */
+
+add_filter( 'acf/settings/save_json', function() {
+	return get_stylesheet_directory() . '/acf-json';
+} );
+add_filter( 'acf/settings/load_json', function( $paths ) {
+	$paths[] = get_stylesheet_directory() . '/acf-json';
+	return $paths;
+} );
 
 add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style(
@@ -40,11 +52,14 @@ add_action( 'wp_enqueue_scripts', function() {
 		array(),
 		filemtime( get_stylesheet_directory() . '/assets/css/custom.css' )
 	);
-}, 20 );
+}, 22 );
+
 
 add_action( 'after_setup_theme', function() {
 	add_theme_support( 'post-thumbnails' );
-	add_image_size( 'event-featured', 800, 450, true ); // true = hard crop
+	add_image_size( 'event-featured', 800, 450, true );  // 16:9 — existing
+	add_image_size( 'oswp-square', 800, 800, true );      // 1:1
+	add_image_size( 'oswp-landscape', 1067, 800, true );  // 4:3
 } );
 
 /**
@@ -179,10 +194,15 @@ function oswp_forty_start() {
 <div id="wrapper">
 
 <header id="header">
-	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo"><strong><?php bloginfo( 'name' ); ?></strong></a>
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo">
+		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/logo.png' ); ?>" alt="<?php bloginfo( 'name' ); ?>">
+		<strong><?php bloginfo( 'name' ); ?></strong>
+	</a>
+<span class="tagline">te whare toi o whaingaroa</span>
 	<nav>
 		<a href="#menu">Menu</a>
 	</nav>
+
 </header>
 
 <nav id="menu">
@@ -302,3 +322,29 @@ add_action( 'wp_enqueue_scripts', function() {
 		true
 	);
 }, 21 );
+
+/**
+ * Force the 'event' post type to render through main_display.php.
+ * Explicit by design — main_display.php is a general-purpose rich
+ * content template, not tied to WordPress's single-{posttype}.php
+ * naming convention, so it can serve additional post types later
+ * by adding them to the is_singular() check below.
+ */
+add_filter( 'single_template', function( $template ) {
+	if ( is_singular( 'event' ) ) {
+		$custom = get_stylesheet_directory() . '/main_display.php';
+		if ( file_exists( $custom ) ) {
+			return $custom;
+		}
+	}
+	return $template;
+} );
+
+/**
+ * Zero WYSIWYG for events — content is entered entirely via the ACF
+ * Event Details panel, not the block editor. Confirmed team decision.
+ * Scoped to 'event' only; pages keep their normal editor.
+ */
+add_action( 'init', function() {
+	remove_post_type_support( 'event', 'editor' );
+} );

@@ -1,1 +1,0 @@
-bash events-schema-cli.sh | jq '[.[] | select(.event_date >= "01/08/2026" and .event_date <= "10/08/2026") | {id, title, event_date, event_end, event_category, event_summary}]'

@@ -10,10 +10,10 @@ oswp_forty_start();
 <section id="banner" class="major">
 	<div class="inner">
 		<header class="major">
-			<h1>Raglan Old School Arts Centre</h1>
+			<h1>dream : connect : create</h1>
 		</header>
 		<div class="content">
-			<p style="text-transform: uppercase;">Placeholder tagline — to be decided</p>
+			<p style="text-transform: uppercase;"></p>
 			<ul class="actions">
 				<li><a href="#one" class="button next scrolly">Get Started</a></li>
 			</ul>
@@ -24,12 +24,12 @@ oswp_forty_start();
 <section id="one" class="tiles">
 	<?php
 	$tiles = array(
-		array( 'title' => 'Commune',  'image' => 'tui.JPG',        'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
-		array( 'title' => 'Create',   'image' => 'pic11.jpg',      'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
-		array( 'title' => 'Immerse',  'image' => 'surfdog.jpg',    'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
-		array( 'title' => 'Discover', 'image' => 'Learning.jpg',   'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
-		array( 'title' => 'Replenish','image' => 'replenish.jpg',  'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
-		array( 'title' => 'Retreat',  'image' => 'creek.jpg',      'url' => '/ipsum/', 'desc' => 'Lorem ipsum dolor est' ),
+		array( 'title' => 'immerse',  'image' => 'wearart2.jpg',        'url' => '/ipsum/', 'desc' => 'in our passion for perforance' ),
+		array( 'title' => 'imagine',   'image' => 'visual.jpg',      'url' => '/ipsum/', 'desc' => 'the future of our visual art' ),
+		array( 'title' => 'express',  'image' => 'Book-Club.jpg',    'url' => '/ipsum/', 'desc' => 'our stories through readng & writing' ),
+		array( 'title' => 'discover', 'image' => 'surfdog.jpg',   'url' => '/ipsum/', 'desc' => 'arts education for all' ),
+		array( 'title' => 'focus','image' => 'film.jpg',  'url' => '/ipsum/', 'desc' => 'on our films & film makers' ),
+                        array( 'title' => 'engage',  'image' => 'stage.jpg',      'url' => '/ipsum/', 'desc' => ' and tautoko our community' ),
 	);
 	foreach ( $tiles as $tile ) :
 		$img_url = get_stylesheet_directory_uri() . '/assets/images/' . $tile['image'];

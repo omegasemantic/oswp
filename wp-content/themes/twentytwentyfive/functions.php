@@ -158,25 +158,3 @@ if ( ! function_exists( 'twentytwentyfive_format_binding' ) ) :
 	}
 endif;
 
-/**
- * ACF Local JSON — sync field group definitions to/from theme files.
- * Enables version-controlled, file-based schema editing.
- */
-add_filter( 'acf/settings/save_json', function() {
-	return get_stylesheet_directory() . '/acf-json';
-} );
-
-add_filter( 'acf/settings/load_json', function( $paths ) {
-	$paths[] = get_stylesheet_directory() . '/acf-json';
-	return $paths;
-} );
-
-
-add_action( 'wp_enqueue_scripts', function() {
-	wp_enqueue_style(
-		'site-custom',
-		get_stylesheet_directory_uri() . '/assets/css/custom.css',
-		array(),
-		filemtime( get_stylesheet_directory() . '/assets/css/custom.css' )
-	);
-}, 20 );

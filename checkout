@@ -1,0 +1,103 @@
+# CHECKOUT — design notes (parked)
+
+Status: discussion only, no code. Park until real requirements
+(booking_requirements option list, Stripe account/integration
+status) are known.
+
+## Core concept
+
+A shared, event-parameterized checkout funnel. Every event page has
+a call-to-action button (label varies — "Buy Tickets", "RSVP", "I'm
+Interested", etc.) that, depending on the event's booking type,
+either routes to one shared checkout entry point or takes a
+different, non-payment action.
+
+Single-item only — one event per checkout, no cart, no quantity/
+session state (at least for v1; see "future" note below). This is
+NOT a shopping cart. It's closer to "this button click carries one
+piece of context (which event) forward" than a retail cart pattern.
+
+## Driving field: booking_requirements (BR)
+
+New/renamed ACF field (was tentatively `attendance_type`, rename to
+`booking_requirements`). Controlled vocabulary (Select/Radio, not
+free text), options TBD but likely:
+
+- `ticketed` — routes to the shared checkout, which then hands off
+  to Stripe. Label default: "Buy Tickets".
+- `rsvp` — separate, non-payment action (e.g. a form, mailto).
+  Label default: "RSVP".
+- `enquire` — separate, non-payment action. Label default: "I'm
+  Interested".
+- `free` — no CTA button at all. Free entry, just turn up.
+
+BR determines TWO things, not one:
+1. Button label (via a PHP lookup array, centrally controlled —
+   not a free-text field per event, to keep wording consistent
+   across the site without relying on staff retyping it correctly
+   each time).
+2. URL/routing behaviour — for `ticketed`, the URL is CONSTRUCTED
+   by code (e.g. checkout.example.com/?event_id=40), not typed by
+   staff. For `rsvp`/`enquire`, likely still a manually-entered
+   link field (external form, mailto) — TBD whether these need
+   their own sub-logic too.
+
+## Overlap to resolve when this is picked back up
+
+`booking_required` (existing boolean field) and the new BR field
+ask overlapping questions. Likely BR should REPLACE
+`booking_required` entirely, since `free` in the new vocabulary
+already covers "no booking needed" — worth deciding when built,
+not carrying two fields expressing the same idea.
+
+## Architecture — where this should live in code
+
+This is NOT just a rendering/display concern (unlike everything
+else in main_display.php so far) — once URL behaviour is involved,
+it's transactional/business logic. Should live in its own
+function, or its own small file, not inline in main_display.php's
+render block.
+
+## Build approach: custom PHP, not a plugin — for the routing/UI layer
+
+Reasoning:
+- Visual consistency — any WordPress booking/checkout plugin ships
+  its own opinionated markup, near-guaranteed to clash with Forty's
+  matched design language. Fighting plugin CSS costs more than
+  building the simple thing directly.
+- Scope match — plugins solve the general case (multi-item,
+  inventory, tax, shipping); this needs one narrow flow (one event,
+  one Stripe session). Using a general tool for a narrow job means
+  carrying unused complexity and update/security burden.
+- Fits the site's established pattern — everything built so far
+  (menus, shell, tiles, ACF wiring) is precisely-scoped custom PHP
+  matching Forty's own vocabulary. A third-party plugin would be
+  the first real black-box dependency in an otherwise fully
+  understood codebase.
+
+EXCEPTION — the actual payment/Stripe layer itself should NOT be
+hand-rolled. Use Stripe's own official PHP SDK or hosted Checkout /
+Payment Links, not a WordPress marketplace plugin. WordPress should
+never handle card data directly (keeps the site out of PCI scope).
+Custom PHP = the form/routing/button layer only. Stripe's own
+tooling = the actual money-handling layer.
+
+## Known context / background
+
+Site previously had THREE separate Stripe integrations (one per
+something — presumably per event type or per old page). This
+redesign consolidates to one shared checkout entry point,
+parameterized by event, rather than duplicated per-event/per-page
+integrations.
+
+## Open questions for when this is picked back up
+
+- Is any Stripe integration currently live, or starting fresh?
+- Full BR option list — does `ticketed`/`rsvp`/`enquire`/`free`
+  cover the real range, or are there other booking mechanisms?
+- Do `rsvp`/`enquire` need their own routing logic too, or are they
+  simple enough to stay as manually-entered links?
+- Future: could quantity/multi-item ever be a real requirement
+  (stakeholder mentioned this is possible, even if unlikely)? If
+  so, is the v1 single-item design able to extend additively, or
+  does it need reconsidering now to avoid a later rebuild?
