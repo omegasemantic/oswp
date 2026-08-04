@@ -3,6 +3,11 @@
    Organised: base > layout > components > utilities
    ============================================ */
 /* --- Single feature image + caption --- */
+
+#banner {
+	background-image: url("../images/banner.jpg");
+}
+
 img.force-square {
 	aspect-ratio: 1 / 1;
 	object-fit: cover;
