@@ -10,8 +10,8 @@
  *   - small_tile_image: optional, but MUST be exactly 3, else same
  *     silent skip
  *
- * Vertical order: h1 -> featured_image -> main_tile_image (2, 6u
- * each) -> small_tile_image (3, 4u each) -> two-column (LH
+ * Vertical order: h1 -> tagline -> featured_image -> main_tile_image
+ * (2, 6u each) -> small_tile_image (3, 4u each) -> two-column (LH
  * event_summary / RH event_details, always renders).
  *
  * NOW WIRED TO REAL ACF FIELDS AND WP CORE — pulls from the current
@@ -134,7 +134,7 @@ if ( get_field( 'is_accessible' ) ) {
 $event_actions = array();
 $ticket_link = get_field( 'ticket_link' );
 if ( $ticket_link ) {
-	$event_actions[] = array( 'url' => $ticket_link, 'label' => 'Buy Tickets', 'special' => true );
+	$event_actions[] = array( 'url' => $ticket_link, 'label' => 'Book Now', 'special' => true );
 }
 $attendance_link = get_field( 'attendance_link' );
 if ( $attendance_link ) {
@@ -179,6 +179,10 @@ oswp_forty_start();
 
 		<header class="major">
 			<h1><?php the_title(); ?></h1>
+			<?php $tagline = get_field( 'tagline' ); ?>
+			<?php if ( $tagline ) : ?>
+			<p class="tagline"><?php echo esc_html( $tagline ); ?></p>
+			<?php endif; ?>
 		</header>
 
 		<?php if ( $has_featured_photo ) : ?>

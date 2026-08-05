@@ -198,7 +198,7 @@ function oswp_forty_start() {
 		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/logo.png' ); ?>" alt="<?php bloginfo( 'name' ); ?>">
 		<strong><?php bloginfo( 'name' ); ?></strong>
 	</a>
-<span class="tagline">te whare toi o whaingaroa</span>
+<span id="tagline">te whare toi o whaingaroa</span>
 	<nav>
 		<a href="#menu">Menu</a>
 	</nav>

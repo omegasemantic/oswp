@@ -1,0 +1,136 @@
+OSWP — Raglan Old School Arts Centre Website
+
+WordPress site for a community arts centre. The site runs on a custom-built theme, referred to here as wpos — the site's own visual and functional system, purpose-built for this project. wpos is built on top of Forty, a design template by HTML5UP, which supplies the base CSS/JS/visual language; wpos is the actual integration — WordPress plumbing, content structure, and site- specific behaviour layered on top of Forty's design foundation. Content (events, pages) is managed through Advanced Custom Fields (ACF) and Custom Post Type UI (CPT UI).
+
+Read this document top to bottom and you should be able to work on the site with no other context.
+
+Stack
+WordPress (via Docker: wordpress:latest + mysql:8.0)
+PHP — theme templates, no build step, no compiler
+wpos — the site's own theme (child theme, technically named oswp-child on disk — see Directory Structure below), built on Forty's CSS/JS foundation
+Advanced Custom Fields (free tier) — all event/content data
+Custom Post Type UI — registers the event post type and the venue / event_category / staff taxonomies
+Code Snippets plugin — used for a small amount of ad-hoc PHP outside the theme (check before assuming all logic lives in functions.php)
+Requirements to run locally
+Docker + Docker Compose
+WP-CLI is expected to be available inside the WordPress container for admin/content tasks (wp post, wp theme, etc.)
+ImageMagick, if using the included image-prep scripts (imgprep.sh, imgaudit.sh — not part of the theme itself, dev utilities only)
+bash
+docker compose up -d
+
+Site available at whatever port docker-compose.yml maps (historically :8080 locally).
+
+Directory structure
+oswp/
+├── docker-compose.yml
+├── child -> wp-content/themes/oswp-child/   (symlink, convenience)
+├── wp-content/
+│   ├── themes/
+│   │   ├── twentytwentyfive/    (parent theme — DO NOT edit;
+│   │   │                         functions.php here has caused
+│   │   │                         real bugs when code was
+│   │   │                         accidentally pasted here instead
+│   │   │                         of the child theme)
+│   │   └── oswp-child/          (all actual site code lives here)
+│   │       ├── style.css        (required WP child-theme header)
+│   │       ├── functions.php    (all custom PHP — see below)
+│   │       ├── main_display.php (the event display template)
+│   │       ├── page-billboard.php
+│   │       ├── page-recurring.php
+│   │       ├── page-next7days.php
+│   │       ├── assets/
+│   │       │   ├── css/         (main.css = Forty's own CSS,
+│   │       │   │                 vendored; custom.css = site-
+│   │       │   │                 specific overrides/additions)
+│   │       │   ├── js/          (Forty's JS: jQuery, skel,
+│   │       │   │                 scrolly, util, main.js)
+│   │       │   ├── images/
+│   │       │   └── fonts/
+│   │       └── patterns/
+│   └── plugins/
+│       ├── advanced-custom-fields/
+│       └── custom-post-type-ui/
+How a page gets rendered
+
+WordPress's normal template hierarchy is only partly used here:
+
+Static pages (page-{slug}.php) — standard WordPress filename convention. WordPress automatically uses page-billboard.php for a page with the slug billboard, etc. No extra registration needed.
+Events (the event custom post type) — do NOT use WordPress's usual single-event.php naming convention. Instead, a single_template filter in functions.php explicitly routes every event post to main_display.php, regardless of that file's name. This was a deliberate choice — the display template is written to be content-type-agnostic in the long run, not permanently tied to being "the event template" by filename.
+
+Every wpos page/template calls oswp_forty_start() at the top and oswp_forty_end() at the bottom (both in functions.php, named _forty_ on disk for historical reasons — they are wpos's shell functions) — these print the shared header/nav/footer HTML. A small number of pages not yet migrated to wpos still use the older oswp_page_start() / oswp_page_end() pair, which wraps Twenty Twenty-Five's block-theme template parts instead.
+
+How content data works
+Events are entered entirely through ACF fields (the block editor/WYSIWYG is explicitly disabled for this post type — see remove_post_type_support('event', 'editor') in functions.php).
+oswp_get_event_record($post_id) in functions.php is the single source of truth for reading an event's full data — merges every ACF field with the post's taxonomy term assignments (staff/venue/event_category) into one flat array.
+Display templates are written to be reductive: they check whether a given field has a value and only render that section if it does. No field is ever required to exist for a page to render correctly. This applies throughout — a missing featured image, missing tile images, missing summary, etc. all silently produce a shorter page, never an error.
+ACF's Location Rules and Conditional Logic control what Authors see while editing a post — this is entirely separate from what's shown on the public page. A field can be hidden from the editing screen (e.g. movie-specific fields, only shown when the event's category is Film) while still rendering publicly if it happens to have a saved value, and vice versa.
+wpos's foundation: Forty (required files and dependencies)
+
+wpos's visual language — layout grid, typography, colour palette, components (buttons, boxes, tiles) — comes from Forty, vendored (copied, not npm-installed) directly into assets/. File names on disk still say "Forty"/"main" (main.css, main.js) rather than "wpos" — this is a naming/branding decision only, not yet applied to the actual files. Source: HTML5UP's Forty template, originally obtained via a Jekyll build at ~/sites/karamu/pasupe/assets/ — if any of these files are ever missing, re-copy from there rather than downloading fresh (this exact recovery happened once already).
+
+Required files, and why each exists:
+
+assets/css/
+├── main.css              Forty's own stylesheet. @imports
+│                          font-awesome.min.css by relative path —
+│                          that file MUST sit in this same directory
+│                          or the icon font silently fails to load.
+├── font-awesome.min.css  Icon font CSS, imported by main.css.
+└── custom.css            Site-specific overrides. Must be enqueued
+                           at a HIGHER priority number than main.css
+                           (higher number = loads/prints later =
+                           wins the CSS cascade). Currently: main.css
+                           at 21, custom.css at 22. Get this backwards
+                           and overrides silently do nothing.
+
+assets/fonts/              FontAwesome's actual font files (.woff,
+                            .woff2, .ttf, .eot, .svg, .otf) —
+                            referenced by font-awesome.min.css.
+
+assets/js/                 Must be enqueued in this exact dependency
+├── jquery                 order (see wp_enqueue_script calls in
+├── skel.min.js             functions.php) — main.js calls both skel
+├── jquery.scrolly.min.js   and $(...).scrolly() directly on
+├── util.js                 document ready, so both MUST load before
+└── main.js                 main.js or it throws a JS error and the
+                             rest of the script (including the menu
+                             toggle) never runs. jquery.scrollex.min.js
+                             is deliberately NOT included — confirmed
+                             unused; only add it if a console error
+                             specifically names it.
+
+assets/images/              Forty's own placeholder/demo images
+                             (pic01.jpg etc.) plus the site's actual
+                             uploaded images. banner.jpg specifically
+                             is referenced directly in main.css's
+                             #banner rule (background-image) — if
+                             replacing the homepage banner image,
+                             either overwrite this exact filename or
+                             override the rule in custom.css.
+
+Enqueue order (all in functions.php, all as wp_enqueue_style/ wp_enqueue_script calls hooked to wp_enqueue_scripts):
+
+main.css (priority 21)
+custom.css (priority 22 — must be higher/later than main.css)
+jquery (WordPress's own bundled copy, not Forty's jquery.min.js — avoids loading two copies)
+skel.min.js
+jquery.scrolly.min.js
+util.js
+main.js (must be last — depends on all of the above)
+
+If the menu toggle stops working or the console shows skel is not defined / $(...).scrolly is not a function, this dependency chain is the first thing to check.
+
+Design language
+
+wpos follows Forty's own existing visual conventions wherever possible — font sizes, colour palette, spacing, border treatment — rather than introducing new ad-hoc styling. Where Forty has no existing pattern for something (e.g. image captions), new CSS is composed from Forty's existing values (same font-size steps, same muted-colour convention) rather than styled arbitrarily. The goal is for wpos to read as one coherent system, not a base template with bolted-on exceptions.
+
+Known limitations / deliberate simplifications
+No ACF Pro — Gallery and Repeater field types are unavailable. Where a "several of these" input is needed (e.g. multiple tile images), the workaround is individually numbered fields (big_tile_image_1, big_tile_image_2, etc.) rather than a single repeating field.
+Image cropping for tile display currently uses a CSS-only trick (object-fit: cover + aspect-ratio) for visual squaring, not a genuine server-side crop pipeline tied to the registered WordPress image sizes — this is a known gap, not a bug.
+No payment/checkout system is built yet — ticket/booking links are currently plain URLs entered per-event via ACF. A shared, event-parameterized checkout flow (handing off to Stripe, never storing card data in WordPress) is planned but not implemented.
+Contributing / editing conventions
+Never edit wp-content/themes/twentytwentyfive/ — it's the parent theme, kept stock.
+All real work happens in wp-content/themes/oswp-child/.
+Check Forty's existing CSS/markup conventions before adding new styling — reuse before inventing.
+Run php -l on any PHP file after editing, before assuming it works.
+Commit reasonably often — large uncommitted local changes have been lost before during branch operations.

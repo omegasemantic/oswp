@@ -25,7 +25,7 @@ oswp_forty_start();
 	<?php
 	$tiles = array(
 		array( 'title' => 'immerse',  'image' => 'wearart2.jpg',        'url' => '/ipsum/', 'desc' => 'in our passion for performance' ),
-		array( 'title' => 'imagine',   'image' => 'visual.jpg',      'url' => '/ipsum/', 'desc' => 'the future of our visual art' ),
+		array( 'title' => 'develop',   'image' => 'visual.jpg',      'url' => '/ipsum/', 'desc' => 'the future of our visual art' ),
 		array( 'title' => 'embrace',  'image' => 'Book-Club.jpg',    'url' => '/ipsum/', 'desc' => 'our stories through reading and writing' ),
 		array( 'title' => 'discover', 'image' => 'pottery.jpg',   'url' => '/ipsum/', 'desc' => 'art education for all' ),
 		array( 'title' => 'focus','image' => 'film.jpg',  'url' => '/ipsum/', 'desc' => 'on our films & film makers' ),

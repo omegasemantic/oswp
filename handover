@@ -1,0 +1,200 @@
+# OSWP — Handover
+
+## Project
+Raglan Old School Arts Centre WordPress site. Forty (HTML5UP) theme
+shell rebuild, on a child theme (`oswp-child`) parenting Twenty
+Twenty-Five. Local dev via Docker (`oswp-wordpress-1` container),
+repo at `~/sites/oswp` (note: NOT `~/oswp` — path moved at some
+point, `~/sites/oswp` is current/correct). `child` is a symlink to
+`wp-content/themes/oswp-child/`.
+
+## Tool access
+Claude does NOT have direct filesystem/docker access. Everything
+happens via the user pasting terminal output back. Always verify
+current file state before editing — files have drifted from
+assumed state multiple times this project (see Gotchas below).
+
+## Git
+GitHub repo: `omegasemantic/oswp` (public, plain https clone works).
+Single branch now: `main` (was `forty-shell`, merged in — `main` is
+the only branch that matters going forward, holds everything).
+
+## Core architecture — three separate layers, deliberately decoupled
+1. **Schema** (ACF fields + CPT UI taxonomies) — lives in local
+   MySQL only, NOT in git at all.
+2. **Public-facing website** (`main_display.php`, `page-*.php`
+   templates) — reads schema via `get_field()`, purely reductive:
+   only renders fields that have values. Never dictates what the
+   schema contains.
+3. **Office UI** (ACF Location Rules / Conditional Logic) — controls
+   what Authors see while editing, independent of what's shown
+   publicly. A field can be hidden in the editor but still render
+   publicly if it has a saved value (and vice versa).
+
+These three are intentionally decoupled — changes to one shouldn't
+force changes to the others. Keep it that way.
+
+## Key files
+- `functions.php` — theme setup, all custom functions. Contains:
+  - `oswp_forty_start()` / `oswp_forty_end()` — the Forty shell
+    wrapper (header/nav/footer). Every Forty-based page/template
+    calls these at top/bottom.
+  - `oswp_page_start()` / `oswp_page_end()` — OLD Twenty Twenty-Five
+    shell wrapper, only for un-migrated pages.
+  - `oswp_get_event_record($post_id)` — single source of truth for
+    an event's full data: all ACF fields + staff/venue/event_category
+    taxonomy terms, merged into one flat array.
+  - `oswp_render_tile_row()` — reusable helper, renders a row of N
+    tiles at a given Forty width class, but ONLY if count matches
+    exactly (silent skip otherwise).
+  - `single_template` filter — routes the `event` post type to
+    `main_display.php` regardless of filename (doesn't rely on
+    WordPress's `single-event.php` naming convention).
+  - Image sizes registered: `event-featured` (800x450, 16:9),
+    `oswp-square` (800x800, 1:1), `oswp-landscape` (1067x800, 4:3).
+  - `remove_post_type_support('event', 'editor')` — WYSIWYG fully
+    disabled for events, confirmed team decision. Content is 100%
+    ACF-driven for events.
+- `main_display.php` — the main event template (renamed from
+  `page-duplex.php` mid-project; "Duplex"/"four square" were dev
+  codenames, no longer used). Vertical order: h1 → tagline →
+  featured_image (optional) → main_tile_image (optional, exactly 2)
+  → small_tile_image (optional, exactly 3) → two-column (LH
+  event_summary / RH event_details) → action buttons (ticket/RSVP/
+  enquiry links).
+- `page-billboard.php` — homepage tile/billboard template. Tile
+  content currently placeholder (6 Karamu-style tiles, all linking
+  to `/ipsum/`) — real tile targets not yet decided. NOT yet
+  promoted to actual homepage (`front-page.php` / `show_on_front`
+  still points at old page ID 55).
+- `page-recurring.php` — "Regular Events" listing page. Migrated
+  tonight from broken `get_header()/get_footer()` (was silently
+  using WP's ugly compat template) to proper Forty shell. Loops all
+  recurring events, shows title/tagline/schedule sentence, optional
+  `avatar` field (new, fixed-size square image on RH side, kept
+  deliberately separate from main_display.php's tile logic).
+- `custom.css` — user's own file, being actively reorganised by user
+  (not Claude) going forward. Loads at priority 22 (after Forty's
+  main.css at 21) — this load-order fix was a real bug hunt tonight,
+  don't reintroduce.
+- `style.css` — minimal required child-theme header (Theme Name/
+  Template/Description) — WordPress won't recognise the theme
+  without this.
+
+## Real ACF fields on Event Details group (as of tonight)
+Starts, Ends, Is Recurring, Recurrence Frequency/Day/End, Is
+Featured, Feature Priority, Ticket Link, Booking Required,
+Attendance Type/Note/Link, Group Enquiry Link, Is Accessible, Age
+Restriction, Doors Open, Event Summary, Tagline (Text, maxlength
+100), featured_image (Image), big_tile_image_1/2, small_tile_image_
+1/2/3, avatar (Image, new tonight). Plus a separate "Movies" field
+group (Location Rule: Post Taxonomy event_category = Film) with
+Synopsis/Director — NOTE: two duplicate/unlabeled fields (IDs 243,
+246) exist from an earlier misconfigured attempt, worth cleaning up.
+
+## Taxonomies
+`event_category` (hierarchical, has real terms: Class, Community
+Group, Exhibition, Film, Fundraiser, Market, Music, Pottery [+2
+children], Workshop), `venue` (hierarchical), `staff` (flat). All
+scoped to `event` post type only.
+
+## Open design threads (discussed, not built)
+- **Six mission-category ACF grouping**: stakeholder's real
+  categories (Visual Art, Performance Art, Films & Film-making, Arts
+  Education, Heritage Education, Community Events) should become
+  the nesting structure for `event_category`, with Field Group
+  Location Rules scoping which ACF fields Authors see per category.
+  Movies field group is the first working proof of this pattern.
+- **CHECKOUT module** (fully parked, see CHECKOUT.md if it exists,
+  otherwise re-derive from this summary): a `booking_requirements`
+  field (rename from `attendance_type`) should drive BOTH the CTA
+  button label AND URL-routing behaviour — `ticketed` routes to a
+  shared, event-parameterized checkout (WP-side form only, hands off
+  to Stripe — WP never touches card data), `rsvp`/`enquire` route to
+  separate non-payment actions, `free` shows no button. Build as
+  custom PHP (not a plugin) for the routing/UI layer; use Stripe's
+  own SDK/hosted Checkout for the actual payment layer. Site
+  previously had 3 separate Stripe integrations being consolidated
+  into this one shared flow.
+- **Markdown/ACF static-page authoring system**: parked, for
+  faster/shared authoring of static (non-event) pages. Design: one
+  ACF field ("Page Content — Markdown") + one reusable WP Page
+  Template + vendored Parsedown. New page creation stays CLI-only; a
+  `content-editor` WP role (edit existing, can't create/publish/
+  delete) for office staff.
+- **CSS multi-column** for markdown prose — `columns: 2`, NOT
+  Forty's `6u`/`12u` grid (which needs manual splitting, doesn't
+  auto-flow text).
+- **Movie template**: current live movie listings (real content
+  pasted tonight — showtimes, tiered pricing, cast/crew, rating
+  line) are genuinely a different SHAPE, not just extra fields.
+  Decided: separate field group (done) — separate rendering template
+  likely still needed (not yet built), since showtimes/cast are
+  repeater-shaped and ACF Gallery/Repeater are Pro-only (free-tier
+  workaround: numbered fields, same pattern as big_tile_image_1/2).
+
+## VPS / deployment status
+Pasupe VPS (`ssh pasupe`, 139.99.210.27:4361) — WordPress+MySQL in
+Docker, was fresh/default install. Theme files cloned from GitHub
+and copied into place tonight. External access is via a DIFFERENT
+port than the container's internal one — provider uses NAT port
+forwarding (check VPS dashboard's "Forwarded Ports" list, don't
+assume container's internal port is externally reachable). Site's
+real external URL for Pasupe: `http://139.99.210.27:4375/`
+(confirmed reachable, 200 response).
+
+STILL TODO for full deployment: DB export from local + import to
+Pasupe (schema/content never traveled — git only carries code), copy
+`wp-content/uploads/` media, confirm `siteurl`/`home` options match
+the real external port.
+
+Also: Sally/`aunty` VPS (139.99.210.27:3927) — separate box,
+disk nearly full (98%, ~70MB free) — flagged, not yet resolved.
+Swap added to Pasupe tonight (1GB) after high load average observed;
+not yet added to Sally.
+
+## Gotchas learned tonight (worth not repeating)
+1. **Twice** tonight, code meant for the child theme's
+   `functions.php` ended up pasted into the PARENT theme's
+   `functions.php` instead — caused hard-to-trace bugs (undefined
+   variables, reversed CSS cascade order). Always confirm which
+   theme's functions.php before pasting.
+2. **A `git checkout`/branch operation deleted several uncommitted
+   files** (`main_display.php`, `style.css`, `template-parts/`, most
+   of `assets/` js/images/fonts) that had never been committed —
+   recovered `main_display.php`/`page-billboard.php` from this
+   conversation's history, `custom.css` was safely committed
+   already, Forty's js/images/fonts were re-copied from the original
+   Karamu source (`~/sites/karamu/pasupe/assets/`). LESSON: commit
+   more often, don't let large uncommitted changes accumulate.
+3. **Forty's grid unit numbers are N/12 of row width, NOT "how many
+   fit per row"**: 12u=100%, 6u=50%, 4u=33.33%, 3u=25%. Using `4u`
+   for a 4-across layout is WRONG (that's actually thirds) — use
+   `3u` for quarters.
+4. ACF's Gallery and Repeater field types are Pro-only (this site
+   runs free ACF). Workaround pattern established: individually
+   numbered fields (`big_tile_image_1`, `_2`, etc.) instead.
+5. WordPress's `wp_enqueue_style()` priority numbers control actual
+   `<head>` output ORDER — lower number = loads/prints first. A
+   stray duplicate enqueue at a lower priority (in the parent theme,
+   see #1) silently overrode the intended cascade for a while.
+6. Docker containers write files as `www-data` — causes permission
+   conflicts with git operations run as the regular user. Fix with
+   `sudo chown -R $(whoami):$(whoami) <path>` when this happens.
+7. A stray file literally named `[` kept reappearing — cause never
+   definitively found, worked around by adding `[` to `.gitignore`.
+
+## Working style notes (for Claude, next thread)
+- User works 99% CLI (vim, Docker, WP-CLI, git). Prefers concrete
+  commands over explanations of what to click in a GUI, except for
+  actual ACF GUI configuration (no CLI equivalent).
+  - User is now comfortable finding ACF's Location Rules/Conditional
+    Logic panels unassisted.
+- User self-manages `custom.css` organisation now — Claude supplies
+  CSS blocks, user integrates/reorganises them.
+- Always verify current file/DB state before editing rather than
+  assuming — this project has had repeated instances of local
+  state drifting from what was last confirmed.
+- User has explicit "content-editor" concept in mind for future
+  office-staff permissions — Authors role for everyone but the user,
+  minimal sidebar/capabilities.
