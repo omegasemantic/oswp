@@ -24,12 +24,12 @@ oswp_forty_start();
 <section id="one" class="tiles">
 	<?php
 	$tiles = array(
-		array( 'title' => 'immerse',  'image' => 'wearart2.jpg',        'url' => '/ipsum/', 'desc' => 'in our passion for performance' ),
-		array( 'title' => 'develop',   'image' => 'visual.jpg',      'url' => '/ipsum/', 'desc' => 'the future of our visual art' ),
-		array( 'title' => 'embrace',  'image' => 'Book-Club.jpg',    'url' => '/ipsum/', 'desc' => 'our stories through reading and writing' ),
-		array( 'title' => 'discover', 'image' => 'pottery.jpg',   'url' => '/ipsum/', 'desc' => 'art education for all' ),
-		array( 'title' => 'focus','image' => 'film.jpg',  'url' => '/ipsum/', 'desc' => 'on our films & film makers' ),
-		array( 'title' => 'engage',  'image' => 'stage.jpg',      'url' => '/ipsum/', 'desc' => 'and tautoko our community' ),
+		array( 'title' => 'immerse',  'image' => 'wearart2.jpg',        'url' => '/performance_art/', 'desc' => 'in our passion for performance' ),
+		array( 'title' => 'imagine',   'image' => 'visual.jpg',      'url' => '/visual-art/', 'desc' => 'the future of our visual art' ),
+		array( 'title' => 'embrace',  'image' => 'Book-Club.jpg',    'url' => '/our-stories/', 'desc' => 'our stories through reading and writing' ),
+		array( 'title' => 'discover', 'image' => 'pottery.jpg',   'url' => '/education/', 'desc' => 'art education for all' ),
+		array( 'title' => 'focus','image' => 'film.jpg',  'url' => '/film/', 'desc' => 'on our films & film makers' ),
+		array( 'title' => 'engage',  'image' => 'stage.jpg',      'url' => '/tautoko/', 'desc' => 'and tautoko our community' ),
 	);
 	foreach ( $tiles as $tile ) :
 		$img_url = get_stylesheet_directory_uri() . '/assets/images/' . $tile['image'];

@@ -198,12 +198,12 @@ function oswp_forty_start() {
 		<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/logo.png' ); ?>" alt="<?php bloginfo( 'name' ); ?>">
 		<strong><?php bloginfo( 'name' ); ?></strong>
 	</a>
-<span id="tagline">te whare toi o whaingaroa</span>
 	<nav>
 		<a href="#menu">Menu</a>
 	</nav>
 
 </header>
+
 
 <nav id="menu">
 	<?php oswp_forty_nav_menu( 'oswp-header' ); ?>
@@ -248,11 +248,6 @@ function oswp_forty_nav_menu( $location ) {
 	) );
 }
 
-function oswp_forty_page_menu_fallback() {
-	echo '<ul class="links">';
-	wp_list_pages( array( 'title_li' => '' ) );
-	echo '</ul>';
-}
 
 /**
  * Enqueue Forty's main.css for pages using oswp_forty_start()/end().
@@ -348,3 +343,71 @@ add_filter( 'single_template', function( $template ) {
 add_action( 'init', function() {
 	remove_post_type_support( 'event', 'editor' );
 } );
+
+/**
+ * Force the 'movie' post type to render through movie_display.php.
+ * Same pattern as the 'event' filter above.
+ */
+add_filter( 'single_template', function( $template ) {
+        if ( is_singular( 'movie' ) ) {
+                $custom = get_stylesheet_directory() . '/movie_display.php';
+                if ( file_exists( $custom ) ) {
+                        return $custom;
+                }
+        }
+        return $template;
+} );
+
+
+/**
+ * Zero WYSIWYG for movies — same rationale as events: content is
+ * entered entirely via the ACF Movie Details panel, not the block
+ * editor.
+ */
+add_action( 'init', function() {
+        remove_post_type_support( 'movie', 'editor' );
+} );
+
+/**
+ * Zero WYSIWYG for screenings — same rationale as events/movies:
+ * content is entered entirely via the ACF Screening Details panel,
+ * not the block editor.
+ */
+add_action( 'init', function() {
+        remove_post_type_support( 'screening', 'editor' );
+} );
+/**
+ * Hide unused default admin menu items — this site doesn't use the
+ * built-in 'post' type (Events/Movies/Screenings/Pages cover
+ * everything) or Comments.
+ */
+add_action( 'admin_menu', function() {
+        remove_menu_page( 'edit.php' );          // Posts
+        remove_menu_page( 'edit-comments.php' ); // Comments
+        remove_menu_page( 'tools.php' ); // Comments
+} );
+
+
+/**
+ * Use the classic (non-block) editor for Pages only — plain
+ * WYSIWYG textarea, no block inserter. Doesn't require installing
+ * the Classic Editor plugin; WP core still ships the classic
+ * edit screen as a fallback when the block editor is disabled
+ * for a given post type.
+ */
+add_filter( 'use_block_editor_for_post_type', function( $use_block_editor, $post_type ) {
+        if ( $post_type === 'page' ) {
+                return false;
+        }
+        return $use_block_editor;
+}, 10, 2 );
+
+function oswp_forty_page_menu_fallback() {
+	echo '<ul class="links">';
+            wp_list_pages( array(
+                'title_li'    => '',
+                'sort_column' => 'menu_order',
+                'exclude'     => '310,307,322,313,316,294,287', // footer-only page IDs
+            ) );
+	echo '</ul>';
+}

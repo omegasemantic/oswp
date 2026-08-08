@@ -22,6 +22,14 @@
  * 4u=33.33%, 3u=25%) — NOT "how many fit per row." Mobile cascade
  * matches the rest of the site: one breakpoint (12u$(small)),
  * full-width stacked below that.
+ *
+ * Date handling (2026-08): one-off vs recurring events use separate
+ * fields, branched on is_recurring:
+ *   - recurring: semester_starts / semester_ends (d/m/Y g:i a format,
+ *     via DateTime::createFromFormat — never bare strtotime(), which
+ *     silently mis-parses day/month order on this data)
+ *   - one-off: event_date_one_off (Date Picker, d/m/Y format, no time
+ *     — doors_open already covers time separately)
  */
 
 // ---------------------------------------------------------------
@@ -36,96 +44,109 @@ $featured_photo_caption = $has_featured_photo ? ( $featured_image['caption'] ?: 
 // generates it automatically since the size is registered in
 // functions.php); fall back to the full-size original otherwise.
 $featured_photo_src = $has_featured_photo
-	? ( $featured_image['sizes']['event-featured'] ?? $featured_image['url'] )
-	: '';
+        ? ( $featured_image['sizes']['event-featured'] ?? $featured_image['url'] )
+        : '';
 
 $force_square = true;
 
 // Big tiles — only included if the field actually has an image set.
 $main_tile_image = array();
 foreach ( array( 'big_tile_image_1', 'big_tile_image_2' ) as $field_name ) {
-	$img = get_field( $field_name );
-	if ( $img ) {
-		$main_tile_image[] = array(
-			'src'     => $img['url'],
-			'caption' => $img['caption'] ?: $img['alt'],
-		);
-	}
+        $img = get_field( $field_name );
+        if ( $img ) {
+                $main_tile_image[] = array(
+                        'src'     => $img['url'],
+                        'caption' => $img['caption'] ?: $img['alt'],
+                );
+        }
 }
 
 // Small tiles — same pattern, three fields.
 $small_tile_image = array();
 foreach ( array( 'small_tile_image_1', 'small_tile_image_2', 'small_tile_image_3' ) as $field_name ) {
-	$img = get_field( $field_name );
-	if ( $img ) {
-		$small_tile_image[] = array(
-			'src'     => $img['url'],
-			'caption' => $img['caption'] ?: $img['alt'],
-		);
-	}
+        $img = get_field( $field_name );
+        if ( $img ) {
+                $small_tile_image[] = array(
+                        'src'     => $img['url'],
+                        'caption' => $img['caption'] ?: $img['alt'],
+                );
+        }
 }
 
 // LH/RH content — event_summary already exists on the schema.
-// event_details built from event_date/event_end (ACF) + venue
-// (taxonomy term, not a field) — only included if actually set.
+// event_details built from semester_starts/semester_ends (ACF) +
+// venue (taxonomy term, not a field) — only included if actually set.
 $event_summary = get_field( 'event_summary' );
 
 $event_details = array();
 
-$starts = get_field( 'event_date' );
-if ( $starts ) {
-	$event_details['Date'] = date( 'd/m/y', strtotime( $starts ) );
-}
+// Date — branches on is_recurring, since recurring events use the
+// semester_starts/semester_ends pair while one-off events use their
+// own single-date field. Never bare strtotime() — see file header.
+if ( get_field( 'is_recurring' ) ) {
+        $starts = get_field( 'semester_starts' );
+        if ( $starts ) {
+                $dt = DateTime::createFromFormat( 'd/m/Y g:i a', $starts );
+                $event_details['Date'] = $dt ? $dt->format( 'd/m/y' ) : $starts;
+        }
 
-$ends = get_field( 'event_end' );
-if ( $ends ) {
-	$event_details['Ends'] = date( 'd/m/y', strtotime( $ends ) );
+        $ends = get_field( 'semester_ends' );
+        if ( $ends ) {
+                $dt = DateTime::createFromFormat( 'd/m/Y g:i a', $ends );
+                $event_details['Ends'] = $dt ? $dt->format( 'd/m/y' ) : $ends;
+        }
+} else {
+        $one_off = get_field( 'event_date_one_off' );
+        if ( $one_off ) {
+                $dt = DateTime::createFromFormat( 'd/m/Y', $one_off );
+                $event_details['Date'] = $dt ? $dt->format( 'd/m/y' ) : $one_off;
+        }
 }
 
 $venue_terms = get_the_terms( get_the_ID(), 'venue' );
 if ( $venue_terms && ! is_wp_error( $venue_terms ) ) {
-	$event_details['Place'] = $venue_terms[0]->name;
+        $event_details['Place'] = $venue_terms[0]->name;
 }
 
 // Age restriction, doors open — plain text, only if present.
 $age_restriction = get_field( 'age_restriction' );
 if ( $age_restriction ) {
-	$event_details['Age'] = $age_restriction;
+        $event_details['Age'] = $age_restriction;
 }
 
 $doors_open = get_field( 'doors_open' );
 if ( $doors_open ) {
-	$event_details['Doors Open'] = $doors_open;
+        $event_details['Doors Open'] = $doors_open;
 }
 
 // Attendance note — free text, only if present.
 $attendance_note = get_field( 'attendance_note' );
 if ( $attendance_note ) {
-	$event_details['Note'] = $attendance_note;
+        $event_details['Note'] = $attendance_note;
 }
 
 // Recurrence — combined into one readable phrase, only if the event
 // is actually marked recurring.
 if ( get_field( 'is_recurring' ) ) {
-	$frequency = get_field( 'recurrence_frequency' );
-	$day       = get_field( 'recurrence_day' );
-	$phrase    = 'Recurring';
-	if ( $frequency ) {
-		$parts = explode( ':', $frequency );
-		$phrase .= ' ' . trim( end( $parts ) );
-	}
-	if ( $day ) {
-		$phrase .= ', every ' . ucfirst( $day );
-	}
-	$event_details['Frequency'] = $phrase;
+        $frequency = get_field( 'recurrence_frequency' );
+        $day       = get_field( 'recurrence_day' );
+        $phrase    = 'Recurring';
+        if ( $frequency ) {
+                $parts = explode( ':', $frequency );
+                $phrase .= ' ' . trim( end( $parts ) );
+        }
+        if ( $day ) {
+                $phrase .= ', every ' . ucfirst( $day );
+        }
+        $event_details['Frequency'] = $phrase;
 }
 
 // Booking required, accessibility — only shown when true.
 if ( get_field( 'booking_required' ) ) {
-	$event_details['Booking'] = 'Required';
+        $event_details['Booking'] = 'Required';
 }
 if ( get_field( 'is_accessible' ) ) {
-	$event_details['Access'] = 'Accessible venue';
+        $event_details['Access'] = 'Accessible venue';
 }
 
 // Action links — ticket/booking/enquiry URLs. Rendered separately
@@ -134,15 +155,15 @@ if ( get_field( 'is_accessible' ) ) {
 $event_actions = array();
 $ticket_link = get_field( 'ticket_link' );
 if ( $ticket_link ) {
-	$event_actions[] = array( 'url' => $ticket_link, 'label' => 'Book Now', 'special' => true );
+        $event_actions[] = array( 'url' => $ticket_link, 'label' => 'Book Now', 'special' => true );
 }
 $attendance_link = get_field( 'attendance_link' );
 if ( $attendance_link ) {
-	$event_actions[] = array( 'url' => $attendance_link, 'label' => 'RSVP', 'special' => false );
+        $event_actions[] = array( 'url' => $attendance_link, 'label' => 'RSVP', 'special' => false );
 }
 $group_enquiry_link = get_field( 'group_enquiry_link' );
 if ( $group_enquiry_link ) {
-	$event_actions[] = array( 'url' => $group_enquiry_link, 'label' => 'Group Enquiries', 'special' => false );
+        $event_actions[] = array( 'url' => $group_enquiry_link, 'label' => 'Group Enquiries', 'special' => false );
 }
 
 /**
@@ -150,82 +171,82 @@ if ( $group_enquiry_link ) {
  * if the supplied array has EXACTLY $required_count items.
  */
 function oswp_render_tile_row( $tiles, $width_class, $force_square, $required_count ) {
-	if ( count( $tiles ) !== $required_count ) {
-		return;
-	}
-	$count = count( $tiles );
-	$img_class = $force_square ? 'force-square' : '';
-	?>
-	<div class="row">
-		<?php foreach ( $tiles as $i => $tile ) :
-			$is_last = ( $i === $count - 1 );
-			$col_class = $width_class . ( $is_last ? '$' : '' ) . ' 12u$(small)';
-		?>
-		<div class="<?php echo esc_attr( $col_class ); ?>">
-			<figure class="single-feature">
-				<img class="<?php echo esc_attr( $img_class ); ?>" src="<?php echo esc_url( $tile['src'] ); ?>" alt="">
-				<figcaption><?php echo esc_html( $tile['caption'] ); ?></figcaption>
-			</figure>
-		</div>
-		<?php endforeach; ?>
-	</div>
-	<?php
+        if ( count( $tiles ) !== $required_count ) {
+                return;
+        }
+        $count = count( $tiles );
+        $img_class = $force_square ? 'force-square' : '';
+        ?>
+        <div class="row">
+                <?php foreach ( $tiles as $i => $tile ) :
+                        $is_last = ( $i === $count - 1 );
+                        $col_class = $width_class . ( $is_last ? '$' : '' ) . ' 12u$(small)';
+                ?>
+                <div class="<?php echo esc_attr( $col_class ); ?>">
+                        <figure class="single-feature">
+                                <img class="<?php echo esc_attr( $img_class ); ?>" src="<?php echo esc_url( $tile['src'] ); ?>" alt="">
+                                <figcaption><?php echo esc_html( $tile['caption'] ); ?></figcaption>
+                        </figure>
+                </div>
+                <?php endforeach; ?>
+        </div>
+        <?php
 }
 
 oswp_forty_start();
 ?>
 <section id="one">
-	<div class="inner">
+        <div class="inner">
 
-		<header class="major">
-			<h1><?php the_title(); ?></h1>
-			<?php $tagline = get_field( 'tagline' ); ?>
-			<?php if ( $tagline ) : ?>
-			<p class="tagline"><?php echo esc_html( $tagline ); ?></p>
-			<?php endif; ?>
-		</header>
+                <header class="major">
+                        <h1><?php the_title(); ?></h1>
+                        <?php $tagline = get_field( 'tagline' ); ?>
+                        <?php if ( $tagline ) : ?>
+                        <p class="tagline"><?php echo esc_html( $tagline ); ?></p>
+                        <?php endif; ?>
+                </header>
 
-		<?php if ( $has_featured_photo ) : ?>
-		<figure class="single-feature">
-			<img src="<?php echo esc_url( $featured_photo_src ); ?>" alt="">
-			<?php if ( $featured_photo_caption ) : ?>
-			<figcaption><?php echo esc_html( $featured_photo_caption ); ?></figcaption>
-			<?php endif; ?>
-		</figure>
-		<?php endif; ?>
+                <?php if ( $has_featured_photo ) : ?>
+                <figure class="single-feature">
+                        <img src="<?php echo esc_url( $featured_photo_src ); ?>" alt="">
+                        <?php if ( $featured_photo_caption ) : ?>
+                        <figcaption><?php echo esc_html( $featured_photo_caption ); ?></figcaption>
+                        <?php endif; ?>
+                </figure>
+                <?php endif; ?>
 
-		<?php
-		oswp_render_tile_row( $main_tile_image, '6u', $force_square, 2 );
-		oswp_render_tile_row( $small_tile_image, '4u', $force_square, 3 );
-		?>
+                <?php
+                oswp_render_tile_row( $main_tile_image, '6u', $force_square, 2 );
+                oswp_render_tile_row( $small_tile_image, '4u', $force_square, 3 );
+                ?>
 
-		<?php if ( $event_summary || ! empty( $event_details ) ) : ?>
-		<div class="row">
-			<?php if ( $event_summary ) : ?>
-			<div class="6u 12u$(small)">
-				<p><?php echo esc_html( $event_summary ); ?></p>
-			</div>
-			<?php endif; ?>
-			<?php if ( ! empty( $event_details ) ) : ?>
-			<div class="6u$ 12u$(small)">
-				<ul class="alt">
-					<?php foreach ( $event_details as $label => $value ) : ?>
-					<li><strong><?php echo esc_html( $label ); ?>:</strong> <?php echo esc_html( $value ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-			<?php endif; ?>
-		</div>
-		<?php endif; ?>
+                <?php if ( $event_summary || ! empty( $event_details ) ) : ?>
+                <div class="row">
+                        <?php if ( $event_summary ) : ?>
+                        <div class="6u 12u$(small)">
+                                <p><?php echo esc_html( $event_summary ); ?></p>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ( ! empty( $event_details ) ) : ?>
+                        <div class="6u$ 12u$(small)">
+                                <ul class="alt">
+                                        <?php foreach ( $event_details as $label => $value ) : ?>
+                                        <li><strong><?php echo esc_html( $label ); ?>:</strong> <?php echo esc_html( $value ); ?></li>
+                                        <?php endforeach; ?>
+                                </ul>
+                        </div>
+                        <?php endif; ?>
+                </div>
+                <?php endif; ?>
 
-		<?php if ( ! empty( $event_actions ) ) : ?>
-		<ul class="actions">
-			<?php foreach ( $event_actions as $action ) : ?>
-			<li><a href="<?php echo esc_url( $action['url'] ); ?>" class="button<?php echo $action['special'] ? ' special' : ''; ?>"><?php echo esc_html( $action['label'] ); ?></a></li>
-			<?php endforeach; ?>
-		</ul>
-		<?php endif; ?>
+                <?php if ( ! empty( $event_actions ) ) : ?>
+                <ul class="actions">
+                        <?php foreach ( $event_actions as $action ) : ?>
+                        <li><a href="<?php echo esc_url( $action['url'] ); ?>" class="button<?php echo $action['special'] ? ' special' : ''; ?>"><?php echo esc_html( $action['label'] ); ?></a></li>
+                        <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
 
-	</div>
+        </div>
 </section>
 <?php oswp_forty_end(); ?>
